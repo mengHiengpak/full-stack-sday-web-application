@@ -1,0 +1,29 @@
+services:
+  backend:
+    build: ./sbay-back-end
+    container_name: sbay-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./sbay-back-end/.env
+    environment:
+      - PORT=5000
+      - NODE_ENV=production
+      - CLIENT_URL=http://localhost:3000
+    volumes:
+      - uploads:/app/uploads
+    restart: unless-stopped
+
+  frontend:
+    build: ./sbay-front-end
+    container_name: sbay-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - API_URL=http://backend:5000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  uploads:
