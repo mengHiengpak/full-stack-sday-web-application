@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f0f2f5;
+  --bg2: #ffffff;
+  --bg3: #f5f6f7;
+  --card: #ffffff;
+  --card2: #f0f2f5;
+  --accent: #1877f2;
+  --accent2: #166fe5;
+  --accent3: #42b72a;
+  --text: #1c1e21;
+  --text2: #65676b;
+  --text3: #8a8d91;
+  --border: #dadde1;
+  --online: #31a24c;
+  --radius: 8px;
+  --radius-sm: 6px;
+  --sidebar-w: 260px;
+  --right-w: 300px;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(24, 119, 242, 0.25);
+  color: #fff;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #bcc0c4; border-radius: 3px; }
+
+@keyframes flyUp {
+  0% { opacity: 1; transform: translateY(0) scale(0.3); }
+  20% { opacity: 1; transform: translateY(-80px) scale(1.3); }
+  60% { opacity: 0.8; transform: translateY(-250px) scale(1); }
+  100% { opacity: 0; transform: translateY(-450px) scale(0.6); }
+}
+
+@keyframes flyUpHeart {
+  0% { opacity: 1; transform: translateY(0) scale(0.3); }
+  15% { opacity: 1; transform: translateY(-60px) scale(1.6); }
+  50% { opacity: 0.9; transform: translateY(-200px) scale(1.2); }
+  100% { opacity: 0; transform: translateY(-500px) scale(0.4); }
+}
+
+@keyframes drift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(var(--drift, 30px)); }
+}
+
+@keyframes pulseHeart {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
