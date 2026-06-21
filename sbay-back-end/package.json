@@ -1,5 +1,5 @@
 {
-  "name": "ptv-backend",
+  "name": "sbay-backend",
   "version": "1.0.0",
   "scripts": {
     "dev": "nodemon --exec \"npx ts-node\" src/server.ts",

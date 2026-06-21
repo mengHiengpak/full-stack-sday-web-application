@@ -7,7 +7,7 @@ let socket = null;
 export const getSocket = () => {
   if (typeof window === 'undefined') return null;
 
-  const token = localStorage.getItem('ptv_token');
+  const token = localStorage.getItem('sbay_token');
   if (!token) return null;
 
   if (socket) {

@@ -11,7 +11,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   const loadUser = useCallback(async () => {
-    const token = localStorage.getItem('ptv_token');
+    const token = localStorage.getItem('sbay_token');
     if (!token) {
       setLoading(false);
       return;
@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
       const res = await authAPI.me();
       setUser(res.data.data);
     } catch {
-      localStorage.removeItem('ptv_token');
+      localStorage.removeItem('sbay_token');
     } finally {
       setLoading(false);
     }
@@ -31,7 +31,7 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     const res = await authAPI.login({ email, password });
     const { token, data } = res.data;
-    localStorage.setItem('ptv_token', token);
+    localStorage.setItem('sbay_token', token);
     setUser(data);
     return data;
   };
@@ -39,14 +39,14 @@ export function AuthProvider({ children }) {
   const register = async (username, email, password) => {
     const res = await authAPI.register({ username, email, password });
     const { token, data } = res.data;
-    localStorage.setItem('ptv_token', token);
+    localStorage.setItem('sbay_token', token);
     setUser(data);
     return data;
   };
 
   const logout = () => {
     disconnectSocket();
-    localStorage.removeItem('ptv_token');
+    localStorage.removeItem('sbay_token');
     setUser(null);
   };
 

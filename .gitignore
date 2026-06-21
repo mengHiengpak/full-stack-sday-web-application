@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.next/
+.env
+.env.local
+*.log
+*.err
+uploads/
+data/
+downloads/
+bin/
+cookies.txt
+*.tsbuildinfo
+.DS_Store
+out/
+build/
+.vercel

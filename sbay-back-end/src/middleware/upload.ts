@@ -59,7 +59,7 @@ if (isCloudinaryConfigured()) {
     params: async (req: Request, file: Express.Multer.File) => {
       const isVideo = file.mimetype.startsWith('video/');
       return {
-        folder: 'ptv/posts',
+        folder: 'sbay/posts',
         resource_type: isVideo ? ('video' as const) : ('image' as const),
         allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'mkv'],
       } as any;
@@ -68,17 +68,17 @@ if (isCloudinaryConfigured()) {
 
   const avatarStorage = new CloudinaryStorage({
     cloudinary,
-    params: { folder: 'ptv/avatars', resource_type: 'image', allowed_formats: ['jpg', 'jpeg', 'png', 'webp'] } as any,
+    params: { folder: 'sbay/avatars', resource_type: 'image', allowed_formats: ['jpg', 'jpeg', 'png', 'webp'] } as any,
   });
 
   const coverStorage = new CloudinaryStorage({
     cloudinary,
-    params: { folder: 'ptv/covers', resource_type: 'image', allowed_formats: ['jpg', 'jpeg', 'png', 'webp'] } as any,
+    params: { folder: 'sbay/covers', resource_type: 'image', allowed_formats: ['jpg', 'jpeg', 'png', 'webp'] } as any,
   });
 
   const chatStorage = new CloudinaryStorage({
     cloudinary,
-    params: { folder: 'ptv/chat', resource_type: 'auto', allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov'] } as any,
+    params: { folder: 'sbay/chat', resource_type: 'auto', allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov'] } as any,
   });
 
   uploadPost = multer({ storage: postStorage });

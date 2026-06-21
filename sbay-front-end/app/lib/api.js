@@ -8,7 +8,7 @@ const isClient = typeof window !== 'undefined';
 
 API.interceptors.request.use((config) => {
   if (isClient) {
-    const token = localStorage.getItem('ptv_token');
+    const token = localStorage.getItem('sbay_token');
     if (token) config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -18,7 +18,7 @@ API.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401 && isClient) {
-      localStorage.removeItem('ptv_token');
+      localStorage.removeItem('sbay_token');
       if (!window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) {
         window.location.href = '/login';
       }
