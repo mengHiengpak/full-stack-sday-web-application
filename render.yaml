@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: sbay-backend
+    env: docker
+    dockerfilePath: ./sbay-back-end/Dockerfile
+    envVars:
+      - key: PORT
+        value: "5000"
+      - key: NODE_ENV
+        value: production
+      - key: CLIENT_URL
+        value: https://sbay-frontend.onrender.com
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+
+  - type: web
+    name: sbay-frontend
+    env: docker
+    dockerfilePath: ./sbay-front-end/Dockerfile
+    envVars:
+      - key: API_URL
+        value: https://sbay-backend.onrender.com
+      - key: NODE_ENV
+        value: production
