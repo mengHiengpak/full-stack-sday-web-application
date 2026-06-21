@@ -20,14 +20,20 @@ RUN apk add --no-cache ffmpeg python3 curl ca-certificates \
 
 WORKDIR /app
 
+# Copy backend
 COPY --from=backend-builder /app/dist ./dist
 COPY --from=backend-builder /app/package*.json ./
 RUN npm ci --omit=dev
 
-COPY --from=frontend-builder /app/.next ./.next
-COPY --from=frontend-builder /app/next.config.js ./
-COPY --from=frontend-builder /app/package.json ./frontend-package.json
+# Copy frontend
+COPY --from=frontend-builder /app/.next /app/frontend/.next
+COPY --from=frontend-builder /app/next.config.js /app/frontend/
+COPY --from=frontend-builder /app/package*.json /app/frontend/
+RUN cd /app/frontend && npm ci --omit=dev
 
-EXPOSE 5000
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-CMD ["node", "dist/server.js"]
+EXPOSE 3000
+
+CMD ["/entrypoint.sh"]
