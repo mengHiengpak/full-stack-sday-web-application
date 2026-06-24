@@ -36,7 +36,10 @@ const server = http.createServer(app);
 
 const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:3000').split(',').map(s => s.trim());
 app.use(cors({
-  origin: (origin, cb) => { cb(null, !origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')); },
+  origin: (origin, cb) => {
+    if (process.env.NODE_ENV === 'production' || !origin) return cb(null, true);
+    cb(null, allowedOrigins.includes(origin) || allowedOrigins.includes('*'));
+  },
   credentials: true,
 }));
 app.use(securityHeaders);
