@@ -193,7 +193,7 @@ export default function ProfilePage() {
                 </>
               )}
             </div>
-            <div className="px-8 pb-4 relative">
+            <div className="px-8 max-[480px]:px-4 pb-4 relative">
               <div className="flex items-end -mt-[60px] mb-3">
                 <div className="relative flex-shrink-0">
                   <div className="w-[120px] h-[120px] rounded-full border-4 border-[var(--bg2)] bg-[var(--accent)] flex items-center justify-center text-4xl font-bold text-white overflow-hidden shadow-md">
