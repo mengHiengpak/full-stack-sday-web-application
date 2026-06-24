@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, user } = useAuth();
+  const { login, user, updateUser } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -26,13 +26,26 @@ export default function LoginPage() {
       await login(email, password);
     } catch (err) {
       if (err.code === 'ERR_NETWORK') {
-        setError('Cannot reach server. Make sure the backend is running on port 5000.');
+        setError('Cannot reach server. Use Demo Login below.');
       } else {
         setError(err.response?.data?.message || 'Invalid email or password');
       }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDemoLogin = () => {
+    const demoUser = {
+      id: 'demo_user',
+      username: 'DemoUser',
+      email: 'demo@sbay.com',
+      profilePicture: '',
+      bio: 'Hello! I am a demo user. Let us connect!',
+    };
+    localStorage.setItem('sbay_token', 'demo_token');
+    localStorage.setItem('sbay_demo_user', JSON.stringify(demoUser));
+    updateUser(demoUser);
   };
 
   return (
@@ -77,6 +90,19 @@ export default function LoginPage() {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
+
+        <div className="mt-3">
+          <div className="relative mb-3">
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-[var(--border)]" /></div>
+            <div className="relative flex justify-center text-xs"><span className="bg-[var(--card)] px-2 text-[var(--text3)]">or</span></div>
+          </div>
+          <button
+            onClick={handleDemoLogin}
+            className="w-full bg-[var(--accent3)] hover:bg-[#36a420] text-white font-bold text-sm rounded px-3 py-2 flex items-center justify-center gap-2"
+          >
+            <i className="fa-solid fa-user-astronaut" /> Demo Login
+          </button>
+        </div>
 
         <p className="text-center text-sm text-[var(--text3)] mt-4">
           <Link href="/register" className="text-[var(--accent)] hover:underline">Create new account</Link>

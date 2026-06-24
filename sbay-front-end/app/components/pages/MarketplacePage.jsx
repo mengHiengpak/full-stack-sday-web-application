@@ -138,7 +138,7 @@ export default function MarketplacePage({ toast }) {
 
   return (
     <div className="animate-[fadeIn_.3s_ease]">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-start sm:items-center justify-between mb-4 flex-wrap gap-3">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-[#34d399] to-[#0ea5e9] flex items-center justify-center text-white text-xl"><i className="fa-solid fa-store" /></div>
           <div>
@@ -146,7 +146,7 @@ export default function MarketplacePage({ toast }) {
             <div className="text-sm text-[var(--text3)]">Buy and sell locally</div>
           </div>
         </div>
-        <button onClick={() => setShowForm(true)} className="px-4 py-2 bg-[var(--accent)] text-white text-sm font-bold rounded-[12px] hover:bg-[var(--accent2)] hover:-translate-y-[1px] active:scale-[0.97] transition-all flex items-center gap-2">
+        <button onClick={() => setShowForm(true)} className="px-4 py-2 bg-[var(--accent)] text-white text-sm font-bold rounded-[12px] hover:bg-[var(--accent2)] hover:-translate-y-[1px] active:scale-[0.97] transition-all flex items-center gap-2 w-full sm:w-auto justify-center">
           <i className="fa-solid fa-plus" /> Add Listing
         </button>
       </div>
@@ -278,7 +278,7 @@ export default function MarketplacePage({ toast }) {
                 <input type="text" value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} placeholder="What are you selling?" className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-3 py-2.5 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-[var(--text2)] mb-1">Price ($) *</label>
                   <input type="number" value={form.price} onChange={(e) => setForm((p) => ({ ...p, price: e.target.value }))} placeholder="0.00" className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-3 py-2.5 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]" />

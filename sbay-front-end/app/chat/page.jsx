@@ -63,6 +63,8 @@ export default function ChatPage() {
   const msgContainerRef = useRef(null);
   const typingTimerMap = useRef({});
   const socketRef = useRef(null);
+  const pollingRef = useRef(null);
+  const lastMsgIdRef = useRef(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -189,6 +191,34 @@ export default function ChatPage() {
       s.off('messages_read');
     };
   }, [user, activeChat]);
+
+  // Poll for new messages every 1 second as real-time fallback (works with or without socket)
+  useEffect(() => {
+    if (!activeChat || activeChat.isGroup) return;
+
+    pollingRef.current = setInterval(async () => {
+      try {
+        const res = await chatAPI.getMessages(activeChat.id);
+        const msgs = res.data.data || res.data || [];
+        const latest = msgs[msgs.length - 1];
+        if (latest && latest.id !== lastMsgIdRef.current) {
+          lastMsgIdRef.current = latest.id;
+          setMessages(msgs);
+          const unreadIds = msgs.filter((m) => !m.read && m.senderId !== user.id).map((m) => m.id);
+          if (unreadIds.length > 0) {
+            socketRef.current?.emit('mark_read', { chatId: activeChat.id, messageIds: unreadIds });
+          }
+        }
+      } catch {}
+    }, 1000);
+
+    return () => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+    };
+  }, [activeChat, user]);
 
   useEffect(() => {
     msgEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -325,6 +355,12 @@ export default function ChatPage() {
       const fallback = mockUsers.filter((u) =>
         u.username?.toLowerCase().includes(ql) && u.id !== user?.id
       );
+      // Also check for demo user
+      let demoUser = null;
+      try {
+        const raw = localStorage.getItem('sbay_demo_user');
+        if (raw) demoUser = JSON.parse(raw);
+      } catch {}
       const seen = new Set();
       const results = [];
       for (const f of matched) {
@@ -336,6 +372,10 @@ export default function ChatPage() {
           seen.add(u.id);
           results.push({ id: u.id, username: u.username, profilePicture: u.profilePicture || '' });
         }
+      }
+      if (demoUser && !seen.has(demoUser.id) && demoUser.id !== user?.id && demoUser.username?.toLowerCase().includes(ql)) {
+        seen.add(demoUser.id);
+        results.push({ id: demoUser.id, username: demoUser.username, profilePicture: demoUser.profilePicture || '' });
       }
       setUserResults(results);
     } finally {
@@ -671,7 +711,7 @@ export default function ChatPage() {
                       <i className="fa-solid fa-comment-dots text-2xl text-[var(--text3)]" />
                     </div>
                     <div className="font-semibold text-[var(--text)] mb-1">No chats yet</div>
-                    <div className="text-sm text-[var(--text3)]">Start a conversation by clicking "New Chat"</div>
+                    <div className="text-sm text-[var(--text3)]">Start a conversation by clicking &ldquo;New Chat&rdquo;</div>
                   </div>
                 ) : (
                   filteredChats.map((chat) => {

@@ -177,7 +177,7 @@ export default function NewsPage({ toast }) {
 
   return (
     <div className="animate-[fadeIn_.3s_ease]">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-start sm:items-center justify-between mb-4 flex-wrap gap-3">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-[#c084fc] to-[#a855f7] flex items-center justify-center text-white text-xl"><i className="fa-solid fa-newspaper" /></div>
           <div>

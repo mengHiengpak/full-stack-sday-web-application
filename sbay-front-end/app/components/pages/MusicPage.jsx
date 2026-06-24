@@ -103,9 +103,9 @@ export default function MusicPage({ toast }) {
     setProgress(0);
     setTimeout(() => {
       if (audioRef.current) {
-        audioRef.current.src = track.preview || '';
-        audioRef.current.volume = volume;
         if (track.preview) {
+          audioRef.current.src = track.preview;
+          audioRef.current.volume = volume;
           audioRef.current.play().catch(() => {});
         } else {
           toast?.('🔇 Preview not available for this track');
@@ -350,7 +350,7 @@ export default function MusicPage({ toast }) {
                 step="0.05"
                 value={volume}
                 onChange={changeVolume}
-                className="w-20 accent-[var(--accent)] cursor-pointer"
+                className="w-16 sm:w-20 accent-[var(--accent)] cursor-pointer"
               />
             </div>
             <span>{currentTrack.duration ? timeFormat(currentTrack.duration) : ''}</span>

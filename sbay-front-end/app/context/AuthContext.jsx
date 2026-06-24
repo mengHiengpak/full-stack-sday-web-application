@@ -16,6 +16,12 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return;
     }
+    const demoUser = localStorage.getItem('sbay_demo_user');
+    if (demoUser) {
+      setUser(JSON.parse(demoUser));
+      setLoading(false);
+      return;
+    }
     try {
       const res = await authAPI.me();
       setUser(res.data.data);
@@ -47,6 +53,7 @@ export function AuthProvider({ children }) {
   const logout = () => {
     disconnectSocket();
     localStorage.removeItem('sbay_token');
+    localStorage.removeItem('sbay_demo_user');
     setUser(null);
   };
 
