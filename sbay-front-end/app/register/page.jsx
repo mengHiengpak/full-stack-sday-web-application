@@ -29,7 +29,7 @@ export default function RegisterPage() {
       await register(username, email, password);
     } catch (err) {
       if (err.code === 'ERR_NETWORK') {
-        setError('Cannot reach server. Make sure the backend is running on port 5000.');
+        setError('Cannot reach server. Make sure the backend is running.');
       } else {
         setError(err.response?.data?.message || 'Registration failed');
       }
