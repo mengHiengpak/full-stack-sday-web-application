@@ -84,6 +84,21 @@ app.get('/', (req: Request, res: Response) => res.json({
   },
 }));
 
+app.get('/api/health', (req: Request, res: Response) => {
+  res.json({
+    status: 'ok',
+    uptime: process.uptime(),
+    env: {
+      DATABASE_URL: envStatus('DATABASE_URL'),
+      JWT_SECRET: envStatus('JWT_SECRET'),
+      SUPABASE_URL: envStatus('SUPABASE_URL'),
+      SUPABASE_KEY: envStatus('SUPABASE_KEY'),
+      PORT: process.env.PORT,
+      NODE_ENV: process.env.NODE_ENV,
+    },
+  });
+});
+
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
   res.status(500).json({ success: false, message: err.message || 'Server Error' });
