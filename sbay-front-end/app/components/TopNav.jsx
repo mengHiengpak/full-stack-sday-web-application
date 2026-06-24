@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useToast } from '@/app/components/Toast';
 import { usersAPI, notificationsAPI } from '@/app/lib/api';
-import { getUnreadCount as localUnreadCount } from '@/app/lib/localNotifications';
 import NotificationPanel from '@/app/components/NotificationPanel';
 
 export default function TopNav({ onOpenChat }) {
@@ -36,7 +35,7 @@ export default function TopNav({ onOpenChat }) {
         const res = await notificationsAPI.unreadCount();
         setUnreadCount(res.data?.count || res.data?.data || 0);
       } catch {
-        setUnreadCount(localUnreadCount(user.id));
+        setUnreadCount(0);
       }
     };
     fetchCount();

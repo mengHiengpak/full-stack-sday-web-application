@@ -5,8 +5,6 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { usersAPI, postsAPI, friendsAPI, chatAPI } from '@/app/lib/api';
 import { useToast } from '@/app/components/Toast';
-import { sendFriendRequest, respondToRequest, getFriendStatus, getPendingRequestId, unfriend as localUnfriend } from '@/app/lib/localFriends';
-import { createNotification } from '@/app/lib/localNotifications';
 import TopNav from '@/app/components/TopNav';
 import Sidebar from '@/app/components/Sidebar';
 import PostCard from '@/app/components/PostCard';
@@ -45,10 +43,6 @@ export default function ProfilePage() {
     try {
       const res = await usersAPI.get(profileId);
       const data = res.data.data;
-      const localStatus = user ? getFriendStatus(user.id, profileId) : null;
-      if (localStatus) data.friendStatus = localStatus;
-      const reqId = user ? getPendingRequestId(user.id, profileId) : null;
-      if (reqId) data.friendRequestId = reqId;
       setProfile(data);
     } catch {
       toast?.('User not found');
@@ -56,7 +50,7 @@ export default function ProfilePage() {
     } finally {
       setProfileLoading(false);
     }
-  }, [profileId, toast, router, user]);
+  }, [profileId, toast, router]);
 
   const loadPosts = useCallback(async () => {
     setPostsLoading(true);
@@ -80,40 +74,19 @@ export default function ProfilePage() {
   const handleFriendAction = async (action) => {
     const prevStatus = profile?.friendStatus;
     setProfile(prev => prev ? { ...prev, friendStatus: action === 'send' ? 'sent' : action === 'accept' ? 'friends' : action === 'unfriend' ? 'none' : prev.friendStatus } : prev);
-    let localSuccess = false;
     try {
       if (action === 'send') {
         await friendsAPI.sendRequest(profileId);
+        toast?.('Friend request sent');
       } else if (action === 'accept') {
         await friendsAPI.respond(profile?.friendRequestId, 'accepted');
+        toast?.('Friend request accepted');
       } else if (action === 'unfriend') {
         await friendsAPI.unfriend(profileId);
+        toast?.('Unfriended');
       }
-      localSuccess = true;
     } catch {
-      if (action === 'send') {
-        sendFriendRequest(user.id, profileId, user.username || 'Unknown');
-        createNotification({ userId: profileId, type: 'friend_request', senderId: user.id, senderName: user.username || 'Unknown' });
-        localSuccess = true;
-      } else if (action === 'accept') {
-        const reqId = getPendingRequestId(user.id, profileId);
-        if (reqId) {
-          respondToRequest(user.id, reqId, 'accepted');
-          createNotification({ userId: profileId, type: 'friend_accepted', senderId: user.id, senderName: user.username || 'Unknown' });
-        }
-        localSuccess = true;
-      } else if (action === 'unfriend') {
-        localUnfriend(user.id, profileId);
-        localSuccess = true;
-      }
-    }
-    if (localSuccess) {
-      if (action === 'send') toast?.('Friend request sent');
-      else if (action === 'accept') toast?.('Friend request accepted');
-      else if (action === 'unfriend') toast?.('Unfriended');
-      const localStatus = getFriendStatus(user.id, profileId);
-      setProfile(prev => prev ? { ...prev, friendStatus: localStatus || (action === 'send' ? 'sent' : action === 'accept' ? 'friends' : 'none') } : prev);
-    } else {
+      setProfile(prev => prev ? { ...prev, friendStatus: prevStatus } : prev);
       loadProfile();
       toast?.('Action failed');
     }
@@ -178,12 +151,11 @@ export default function ProfilePage() {
       const res = await friendsAPI.getList();
       setFriendsList(res.data.data || []);
     } catch {
-      const { getFriendList } = await import('@/app/lib/localFriends');
-      setFriendsList(getFriendList(user.id) || []);
+      setFriendsList([]);
     } finally {
       setFriendsLoading(false);
     }
-  }, [user]);
+  }, []);
 
   const handleDelete = (postId) => {
     setPosts((prev) => prev.filter(p => p.id !== postId));

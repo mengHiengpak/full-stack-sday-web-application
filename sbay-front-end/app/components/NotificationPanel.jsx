@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { notificationsAPI } from '@/app/lib/api';
-import { getNotificationsForUser, markAsRead as localMarkRead, markAllAsRead as localMarkAllRead } from '@/app/lib/localNotifications';
 
 export default function NotificationPanel({ open, onClose, onRead }) {
   const router = useRouter();
@@ -32,11 +31,7 @@ export default function NotificationPanel({ open, onClose, onRead }) {
       const res = await notificationsAPI.get();
       setNotifications(res.data.data || []);
     } catch {
-      if (user) {
-        setNotifications(getNotificationsForUser(user.id));
-      } else {
-        setNotifications([]);
-      }
+      setNotifications([]);
     } finally {
       setLoading(false);
     }
@@ -46,7 +41,7 @@ export default function NotificationPanel({ open, onClose, onRead }) {
     try {
       await notificationsAPI.markRead(notification.id);
     } catch {
-      localMarkRead(notification.id);
+      // ignore
     }
     onRead?.(1);
     onClose?.();
@@ -63,7 +58,7 @@ export default function NotificationPanel({ open, onClose, onRead }) {
     try {
       await notificationsAPI.markAllRead();
     } catch {
-      localMarkAllRead(user?.id);
+      // ignore
     }
     const unread = notifications.filter(n => !n.read).length;
     onRead?.(unread);
@@ -126,7 +121,7 @@ export default function NotificationPanel({ open, onClose, onRead }) {
           <div className="text-center py-10">
             <div className="text-3xl text-[var(--text3)] mb-2"><i className="fa-regular fa-bell-slash" /></div>
             <div className="text-sm font-medium text-[var(--text2)]">No notifications yet</div>
-            <div className="text-xs text-[var(--text3)] mt-1">We'll let you know when something arrives</div>
+            <div className="text-xs text-[var(--text3)] mt-1">We&apos;ll let you know when something arrives</div>
           </div>
         ) : (
           <div>

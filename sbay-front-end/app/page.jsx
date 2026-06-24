@@ -23,7 +23,6 @@ import BirthdaysPage from '@/app/components/pages/BirthdaysPage';
 import FundraisersPage from '@/app/components/pages/FundraisersPage';
 import TrendingPage from '@/app/components/pages/TrendingPage';
 import LivePage from '@/app/components/pages/LivePage';
-import { getMockPosts, getPaginatedPosts } from '@/app/lib/mockData';
 
 export default function HomePage() {
   const { user, loading } = useAuth();
@@ -44,8 +43,7 @@ export default function HomePage() {
       const res = view === 'feed' ? await postsAPI.feed() : await postsAPI.explore();
       setPosts(res.data.data || []);
     } catch {
-      const mock = getPaginatedPosts(1, 10);
-      setPosts(mock.data);
+      setPosts([]);
     } finally {
       setFeedLoading(false);
     }
@@ -102,7 +100,7 @@ export default function HomePage() {
             </>
           )}
           {view === 'explore' && (
-            <div className="text-center text-sm text-[var(--text3)] mb-4">Explore — what's happening now</div>
+            <div className="text-center text-sm text-[var(--text3)] mb-4">Explore &mdash; what&apos;s happening now</div>
           )}
 
           {(view === 'feed' || view === 'explore') ? (

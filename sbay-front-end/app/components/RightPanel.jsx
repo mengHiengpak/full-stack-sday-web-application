@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { usersAPI, friendsAPI } from '@/app/lib/api';
 import { useAuth } from '@/app/context/AuthContext';
-import { sendFriendRequest as localSendRequest, respondToRequest as localRespond, getFriendRequestsForUser, getFriendList, unfriend as localUnfriend, isFriend as localIsFriend } from '@/app/lib/localFriends';
-import { createNotification } from '@/app/lib/localNotifications';
 
 export default function RightPanel({ toast }) {
   const { user } = useAuth();
@@ -22,10 +20,6 @@ export default function RightPanel({ toast }) {
 
   useEffect(() => {
     if (!user || suggested.length === 0) return;
-    setSuggested(prev => prev.map(u => {
-      if (localIsFriend(user.id, u.id)) return { ...u, friendStatus: 'friends' };
-      return u;
-    }));
   }, [suggested.length, user]);
 
   const loadSuggested = async () => {
@@ -44,13 +38,7 @@ export default function RightPanel({ toast }) {
       const res = await friendsAPI.getRequests();
       setRequests(res.data.data || []);
     } catch {
-      if (user) {
-        const local = getFriendRequestsForUser(user.id);
-        setRequests(local.map((r) => ({
-          id: r.id,
-          sender: { id: r.fromUserId, username: r.fromUsername },
-        })));
-      }
+      // ignore
     } finally {
       setRequestsLoading(false);
     }
@@ -62,14 +50,8 @@ export default function RightPanel({ toast }) {
       await friendsAPI.sendRequest(userId);
       toast?.(`Friend request sent to ${username}`);
     } catch {
-      if (user) {
-        localSendRequest(user.id, userId, user.username || 'Unknown');
-        createNotification({ userId, type: 'friend_request', senderId: user.id, senderName: user.username || 'Unknown' });
-        toast?.(`Friend request sent to ${username}`);
-      } else {
-        loadSuggested();
-        toast?.('Failed to send request');
-      }
+      loadSuggested();
+      toast?.('Failed to send request');
     }
   };
 
@@ -79,10 +61,6 @@ export default function RightPanel({ toast }) {
       await friendsAPI.respond(requestId, status);
       toast?.(status === 'accepted' ? `Accepted friend request from ${username}` : `Declined friend request from ${username}`);
     } catch {
-      const req = localRespond(user.id, requestId, status);
-      if (req && status === 'accepted' && user) {
-        createNotification({ userId: req.fromUserId, type: 'friend_accepted', senderId: user.id, senderName: user.username || 'Unknown' });
-      }
       toast?.(status === 'accepted' ? `Accepted friend request from ${username}` : `Declined friend request from ${username}`);
     }
   };
@@ -93,8 +71,7 @@ export default function RightPanel({ toast }) {
       await friendsAPI.unfriend(userId);
       toast?.(`Unfriended ${username}`);
     } catch {
-      localUnfriend(user.id, userId);
-      toast?.(`Unfriended ${username}`);
+      toast?.('Failed to unfriend');
     }
   };
 

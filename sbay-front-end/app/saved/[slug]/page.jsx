@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { useToast } from '@/app/components/Toast';
-import { getCollection } from '@/app/lib/savedData';
 import TopNav from '@/app/components/TopNav';
 import Sidebar from '@/app/components/Sidebar';
 import RightPanel from '@/app/components/RightPanel';
@@ -21,8 +20,7 @@ export default function SavedDetailPage() {
   useEffect(() => {
     if (authLoading) return;
     if (!user) { router.replace('/login'); return; }
-    const col = getCollection(params.slug);
-    if (col) setCollection(col);
+    setCollection(null);
   }, [params.slug, authLoading]);
 
   if (authLoading) {

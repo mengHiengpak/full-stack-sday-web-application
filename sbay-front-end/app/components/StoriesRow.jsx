@@ -1,16 +1,15 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { storiesAPI } from '@/app/lib/api';
 import StoryViewer from './StoryViewer';
-import { getMockStories } from '@/app/lib/mockData';
 
 export default function StoriesRow({ toast }) {
+  const router = useRouter();
   const [stories, setStories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewerIdx, setViewerIdx] = useState(-1);
-  const [uploading, setUploading] = useState(false);
-  const fileRef = useRef(null);
 
   useEffect(() => {
     loadStories();
@@ -21,59 +20,25 @@ export default function StoriesRow({ toast }) {
       const res = await storiesAPI.get();
       setStories(res.data.data || []);
     } catch {
-      setStories(getMockStories());
+      setStories([]);
     } finally {
       setLoading(false);
     }
   };
 
   const createStory = () => {
-    fileRef.current?.click();
-  };
-
-  const handleFile = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const fd = new FormData();
-      fd.append('media', file);
-      await storiesAPI.create(fd);
-      toast?.('Story posted!');
-      e.target.value = '';
-      loadStories();
-    } catch (err) {
-      toast?.(err.response?.data?.message || 'Failed to post story');
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const storyDuration = (createdAt) => {
-    const diff = Date.now() - new Date(createdAt).getTime();
-    const hrs = Math.floor(diff / 3600000);
-    if (hrs < 1) return `${Math.floor(diff / 60000)}m`;
-    return `${hrs}h`;
+    router.push('/create-story');
   };
 
   return (
     <>
       <div className="flex gap-2 overflow-x-auto pb-1 mb-4">
         <div onClick={createStory} className="flex-shrink-0 w-28 h-40 rounded-lg relative cursor-pointer overflow-hidden border-2 border-dashed border-[var(--border)] hover:border-[var(--accent)] transition-colors bg-[var(--card)]">
-          {uploading ? (
-            <div className="w-full h-full flex items-center justify-center bg-[var(--bg3)]">
-              <div className="w-6 h-6 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
-            </div>
-          ) : (
-            <>
-              <div className="w-full h-full bg-[var(--bg3)]" />
-              <div className="absolute inset-0 bg-black/30" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] w-9 h-9 rounded-full bg-[var(--accent)] text-white flex items-center justify-center text-lg"><i className="fa-solid fa-plus" /></div>
-              <div className="absolute bottom-2 left-0 right-0 text-center text-xs font-semibold text-white">Add Story</div>
-            </>
-          )}
+          <div className="w-full h-full bg-[var(--bg3)]" />
+          <div className="absolute inset-0 bg-black/30" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] w-9 h-9 rounded-full bg-[var(--accent)] text-white flex items-center justify-center text-lg"><i className="fa-solid fa-plus" /></div>
+          <div className="absolute bottom-2 left-0 right-0 text-center text-xs font-semibold text-white">Add Story</div>
         </div>
-        <input ref={fileRef} type="file" accept="image/*,video/*" className="hidden" onChange={handleFile} />
 
         {loading ? (
           <div className="flex items-center text-sm text-[var(--text3)]">Loading stories...</div>

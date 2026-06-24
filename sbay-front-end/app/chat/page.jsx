@@ -5,9 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { chatAPI, usersAPI, friendsAPI } from '@/app/lib/api';
 import { getSocket } from '@/app/lib/socket';
-import { getGroupChats, getGroupById, createGroup, sendGroupMessage, getGroupMessagesById } from '@/app/lib/groupChat';
-import { getFriendList } from '@/app/lib/localFriends';
-import { generateMockUsers } from '@/app/lib/mockData';
 import TopNav from '@/app/components/TopNav';
 import Sidebar from '@/app/components/Sidebar';
 import BottomNav from '@/app/components/BottomNav';
@@ -55,7 +52,6 @@ export default function ChatPage() {
   const [groupName, setGroupName] = useState('');
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [groupSearch, setGroupSearch] = useState('');
-  const [mockUsers, setMockUsers] = useState([]);
   const [showChatMenu, setShowChatMenu] = useState(false);
   const chatMenuRef = useRef(null);
   const fileRef = useRef(null);
@@ -65,6 +61,26 @@ export default function ChatPage() {
   const socketRef = useRef(null);
   const pollingRef = useRef(null);
   const lastMsgIdRef = useRef(null);
+  const [searchResults, setSearchResults] = useState([]);
+
+  const groupUserSearch = useCallback(async (q) => {
+    try {
+      if (q.trim()) {
+        const res = await usersAPI.search(q);
+        const list = res.data.data || [];
+        setSearchResults(list.filter((u) => u.id !== user?.id));
+      } else {
+        const res = await friendsAPI.getList();
+        setSearchResults(res.data.data || []);
+      }
+    } catch { setSearchResults([]); }
+  }, [user]);
+
+  useEffect(() => {
+    if (showCreateGroup) {
+      groupUserSearch('');
+    }
+  }, [showCreateGroup, groupUserSearch]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -72,24 +88,14 @@ export default function ChatPage() {
     }
   }, [user, loading, router]);
 
-  useEffect(() => {
-    try {
-      const users = generateMockUsers();
-      setMockUsers(users);
-    } catch {}
-  }, []);
-
   const loadChats = useCallback(async () => {
     try {
       const res = await chatAPI.getAll();
       const apiChats = res.data.data || [];
-      const groups = getGroupChats();
-      const all = [...groups, ...apiChats];
-      all.sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
-      setChats(all);
+      apiChats.sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
+      setChats(apiChats);
     } catch {
-      const groups = getGroupChats();
-      setChats(groups);
+      setChats([]);
     } finally {
       setLoadingChats(false);
     }
@@ -100,11 +106,6 @@ export default function ChatPage() {
     setMobileView('messages');
     setShowEmoji(false);
     setLoadingMsgs(true);
-    if (chat.isGroup) {
-      setMessages(getGroupMessagesById(chat.id));
-      setLoadingMsgs(false);
-      return;
-    }
     try {
       const res = await chatAPI.getMessages(chat.id);
       const msgs = res.data.data || res.data || [];
@@ -228,18 +229,6 @@ export default function ChatPage() {
     if (!msgInput.trim() || !activeChat || !user) return;
     const content = msgInput.trim();
     setMsgInput('');
-    if (activeChat.isGroup) {
-      const newMsg = sendGroupMessage(activeChat.id, user.id, content);
-      if (newMsg) {
-        setMessages((prev) => (prev.some((m) => m.id === newMsg.id) ? prev : [...prev, newMsg]));
-        setChats((prev) => {
-          const updated = { ...activeChat, lastMessage: newMsg, updatedAt: newMsg.createdAt };
-          const others = prev.filter((c) => c.id !== activeChat.id);
-          return [updated, ...others];
-        });
-      }
-      return;
-    }
     const s = socketRef.current || getSocket();
     if (s?.connected) {
       s.emit('send_message', { chatId: activeChat.id, content });
@@ -349,39 +338,11 @@ export default function ChatPage() {
       const res = await usersAPI.search(q);
       setUserResults(res.data.data || []);
     } catch {
-      const friends = user ? getFriendList(user.id) : [];
-      const ql = q.toLowerCase();
-      const matched = friends.filter((f) => f.username?.toLowerCase().includes(ql));
-      const fallback = mockUsers.filter((u) =>
-        u.username?.toLowerCase().includes(ql) && u.id !== user?.id
-      );
-      // Also check for demo user
-      let demoUser = null;
-      try {
-        const raw = localStorage.getItem('sbay_demo_user');
-        if (raw) demoUser = JSON.parse(raw);
-      } catch {}
-      const seen = new Set();
-      const results = [];
-      for (const f of matched) {
-        seen.add(f.userId);
-        results.push({ id: f.userId, username: f.username, profilePicture: '' });
-      }
-      for (const u of fallback) {
-        if (!seen.has(u.id)) {
-          seen.add(u.id);
-          results.push({ id: u.id, username: u.username, profilePicture: u.profilePicture || '' });
-        }
-      }
-      if (demoUser && !seen.has(demoUser.id) && demoUser.id !== user?.id && demoUser.username?.toLowerCase().includes(ql)) {
-        seen.add(demoUser.id);
-        results.push({ id: demoUser.id, username: demoUser.username, profilePicture: demoUser.profilePicture || '' });
-      }
-      setUserResults(results);
+      setUserResults([]);
     } finally {
       setSearchingUsers(false);
     }
-  }, [mockUsers, user]);
+  }, []);
 
   const loadContacts = useCallback(async () => {
     try {
@@ -392,10 +353,9 @@ export default function ChatPage() {
         setUserResults(list);
       }
     } catch {
-      const friends = user ? getFriendList(user.id) : [];
-      setContacts(friends);
+      setContacts([]);
       if (!userSearch.trim()) {
-        setUserResults(friends.map((f) => ({ id: f.userId, username: f.username, profilePicture: '' })));
+        setUserResults([]);
       }
     }
   }, [user]);
@@ -461,13 +421,14 @@ export default function ChatPage() {
     if (!groupName.trim()) return;
     if (selectedMembers.length < 1) return;
     const allMembers = [{ id: user.id, username: user.username || user.email?.split('@')[0] || 'Me', profilePicture: user.profilePicture || '' }, ...selectedMembers];
-    const group = createGroup(groupName.trim(), user.id, allMembers);
+    const groupId = 'group_' + Date.now();
+    const group = { id: groupId, isGroup: true, name: groupName.trim(), participants: allMembers, lastMessage: null, updatedAt: new Date().toISOString() };
     setShowCreateGroup(false);
     setGroupName('');
     setSelectedMembers([]);
     setGroupSearch('');
-    loadChats();
-    if (group) openChat(group);
+    setChats((prev) => [group, ...prev]);
+    openChat(group);
   };
 
   const toggleMember = (u) => {
@@ -475,13 +436,6 @@ export default function ChatPage() {
       prev.some((m) => m.id === u.id) ? prev.filter((m) => m.id !== u.id) : [...prev, u]
     );
   };
-
-  const filteredMockUsers = mockUsers.filter((u) => {
-    if (u.id === user?.id) return false;
-    if (selectedMembers.some((m) => m.id === u.id)) return true;
-    if (!groupSearch.trim()) return true;
-    return u.username?.toLowerCase().includes(groupSearch.toLowerCase());
-  });
 
   const CreateGroupModal = ({ mobile }) => (
     <div className={mobile ? 'fixed inset-0 z-[300] bg-[var(--bg2)] flex flex-col' : 'fixed inset-0 z-[300] bg-black/50 flex items-center justify-center'}>
@@ -511,8 +465,9 @@ export default function ChatPage() {
             <input
               type="text"
               value={groupSearch}
-              onChange={(e) => setGroupSearch(e.target.value)}
-              placeholder="Add friends..."
+              onChange={(e) => { setGroupSearch(e.target.value); }}
+              onInput={(e) => { const t = setTimeout(() => groupUserSearch(e.target.value), 300); return () => clearTimeout(t); }}
+              placeholder="Search users..."
               className="flex-1 bg-transparent border-none outline-none text-sm text-[var(--text)] py-1.5"
             />
             {groupSearch && <button onClick={() => setGroupSearch('')} className="text-[var(--text3)] hover:text-[var(--text)]"><i className="fa-solid fa-xmark" /></button>}
@@ -529,10 +484,10 @@ export default function ChatPage() {
           )}
         </div>
         <div className="flex-1 overflow-y-auto px-2 pb-4">
-          {filteredMockUsers.length === 0 ? (
-            <div className="text-center py-8 text-sm text-[var(--text3)]">No users found</div>
+          {searchResults.length === 0 ? (
+            <div className="text-center py-8 text-sm text-[var(--text3)]">{groupSearch ? 'No users found' : 'Search for users to add'}</div>
           ) : (
-            filteredMockUsers.slice(0, 50).map((u) => {
+            searchResults.slice(0, 50).map((u) => {
               const selected = selectedMembers.some((m) => m.id === u.id);
               return (
                 <div

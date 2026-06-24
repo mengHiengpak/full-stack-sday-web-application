@@ -1,11 +1,19 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getAllCollections } from '@/app/lib/savedData';
+import { useAuth } from '@/app/context/AuthContext';
 
 export default function SavedPage({ toast }) {
   const router = useRouter();
-  const collections = getAllCollections();
+  const { user } = useAuth();
+  const [collections, setCollections] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setCollections([]);
+    setLoading(false);
+  }, [user]);
 
   return (
     <div className="animate-[fadeIn_.3s_ease]">
