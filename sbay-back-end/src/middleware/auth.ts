@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User';
 import { AuthPayload, AuthenticatedRequest } from '../types';
 
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback_dev_secret_do_not_use_in_production';
+
 export const protect = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   let token: string | undefined;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -10,7 +12,7 @@ export const protect = async (req: AuthenticatedRequest, res: Response, next: Ne
   }
   if (!token) return res.status(401).json({ success: false, message: 'Not authorized, no token' });
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as AuthPayload;
+    const decoded = jwt.verify(token, JWT_SECRET) as AuthPayload;
     const user = await User.findByPk(decoded.id, {
       attributes: { exclude: ['password'] },
     });

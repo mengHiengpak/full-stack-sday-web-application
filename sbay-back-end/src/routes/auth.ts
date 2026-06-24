@@ -7,7 +7,8 @@ import { Op, ValidationError, UniqueConstraintError } from 'sequelize';
 
 const router = Router();
 
-const signToken = (id: number) => jwt.sign({ id: id.toString() }, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_EXPIRE } as jwt.SignOptions);
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback_dev_secret_do_not_use_in_production';
+const signToken = (id: number) => jwt.sign({ id: id.toString() }, JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE } as jwt.SignOptions);
 
 router.post('/register', async (req: AuthenticatedRequest, res: Response) => {
   try {

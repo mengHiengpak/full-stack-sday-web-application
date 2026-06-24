@@ -20,11 +20,10 @@ import { isCloudinaryConfigured } from './middleware/upload';
 import { initSocket } from './socket';
 import { securityHeaders, generalLimiter, authLimiter, xssSanitize } from './middleware/security';
 
-const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET'];
-for (const varName of requiredEnvVars) {
-  if (!process.env[varName]) {
-    throw new Error(`Missing environment variable: ${varName}. Please check your .env file.`);
-  }
+const missingEnvVars = ['DATABASE_URL', 'JWT_SECRET'].filter(v => !process.env[v]);
+if (missingEnvVars.length > 0) {
+  console.error(`❌ Missing environment variables: ${missingEnvVars.join(', ')}`);
+  console.error('   Set them in Render Dashboard > Environment Variables');
 }
 if (!process.env.JWT_EXPIRE) {
   console.warn('⚠️  JWT_EXPIRE not set, defaulting to 7d');
@@ -72,7 +71,18 @@ app.use('/api/story-comments', storyCommentRoutes);
 
 initSocket(server);
 
-app.get('/', (req: Request, res: Response) => res.json({ message: 'Sbay Social Media API Running 🔴' }));
+const envStatus = (key: string) => process.env[key] ? '✅ set' : '❌ missing';
+app.get('/', (req: Request, res: Response) => res.json({
+  message: 'Sbay Social Media API Running 🔴',
+  env: {
+    DATABASE_URL: envStatus('DATABASE_URL'),
+    JWT_SECRET: envStatus('JWT_SECRET'),
+    SUPABASE_URL: envStatus('SUPABASE_URL'),
+    SUPABASE_KEY: envStatus('SUPABASE_KEY'),
+    PORT: process.env.PORT,
+    NODE_ENV: process.env.NODE_ENV,
+  },
+}));
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);

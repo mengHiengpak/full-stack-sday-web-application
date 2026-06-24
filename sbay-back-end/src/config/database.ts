@@ -1,6 +1,11 @@
 import { Sequelize } from 'sequelize';
 
-const sequelize = new Sequelize(process.env.DATABASE_URL as string, {
+const dbUrl = process.env.DATABASE_URL;
+if (!dbUrl) {
+  console.error('❌ DATABASE_URL not set — database features disabled');
+}
+
+const sequelize = new Sequelize(dbUrl || 'postgresql://localhost:5432/postgres', {
   dialect: 'postgres',
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
   dialectOptions: {
@@ -12,6 +17,7 @@ const sequelize = new Sequelize(process.env.DATABASE_URL as string, {
     acquire: 30000,
     idle: 10000,
   },
+  retry: { max: 2 },
 });
 
 export default sequelize;
