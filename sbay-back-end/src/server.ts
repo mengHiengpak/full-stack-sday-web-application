@@ -20,6 +20,8 @@ import { isCloudinaryConfigured } from './middleware/upload';
 import { initSocket } from './socket';
 import { securityHeaders, generalLimiter, authLimiter, xssSanitize } from './middleware/security';
 
+console.log('🚀 Sbay backend starting...');
+console.log(`   NODE_ENV=${process.env.NODE_ENV}, PORT=${process.env.PORT}`);
 const missingEnvVars = ['DATABASE_URL', 'JWT_SECRET'].filter(v => !process.env[v]);
 if (missingEnvVars.length > 0) {
   console.error(`❌ Missing environment variables: ${missingEnvVars.join(', ')}`);
