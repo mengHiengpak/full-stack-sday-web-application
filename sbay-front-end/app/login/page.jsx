@@ -25,23 +25,18 @@ export default function LoginPage() {
     try {
       await login(email, password);
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password');
+      const status = err.response?.status;
+      const msg = err.response?.data?.message || err.message || '';
+      if (!err.response) {
+        setError('Cannot reach backend. Check if backend service is running on Render and env vars (DATABASE_URL, JWT_SECRET) are set in Dashboard.');
+      } else if (status === 500) {
+        setError(`Server error (500) — check Render backend logs. Missing env vars?`);
+      } else {
+        setError(msg || 'Invalid email or password');
+      }
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleDemoLogin = () => {
-    const demoUser = {
-      id: 'demo_user',
-      username: 'DemoUser',
-      email: 'demo@sbay.com',
-      profilePicture: '',
-      bio: 'Hello! I am a demo user. Let us connect!',
-    };
-    localStorage.setItem('sbay_token', 'demo_token');
-    localStorage.setItem('sbay_demo_user', JSON.stringify(demoUser));
-    updateUser(demoUser);
   };
 
   return (
