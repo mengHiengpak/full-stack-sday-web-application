@@ -29,11 +29,11 @@ export default function RegisterPage() {
       await register(username, email, password);
     } catch (err) {
       if (err.code === 'ERR_NETWORK') {
-        setError('Cannot reach server. Make sure the backend is running.');
+        setError('Cannot reach backend. Go to Render Dashboard > Frontend Service > Environment and set NEXT_PUBLIC_API_URL to your backend URL (e.g. https://your-backend.onrender.com).');
       } else if (err.response) {
-        setError(err.response?.data?.message || `Server error (${err.response.status})`);
+        setError(err.response?.data?.message || `Server error (${err.response.status}). Check Render backend logs.`);
       } else {
-        setError('Registration failed. Check that API_URL is set correctly on Render.');
+        setError('Registration failed. Check that your Render backend has DATABASE_URL set.');
       }
     } finally {
       setLoading(false);
