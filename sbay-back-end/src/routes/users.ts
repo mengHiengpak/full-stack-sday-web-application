@@ -7,6 +7,7 @@ import Post from '../models/Post';
 import FriendRequest from '../models/FriendRequest';
 import { protect, adminOnly } from '../middleware/auth';
 import { uploadAvatar, uploadCover, cloudinary, isCloudinaryConfigured } from '../middleware/upload';
+import { tryUploadToSupabase } from '../middleware/supabaseUpload';
 import { AuthenticatedRequest } from '../types';
 
 const fileUrl = (file: Express.Multer.File) =>
@@ -204,7 +205,11 @@ router.put('/profile/update', protect, async (req: AuthenticatedRequest, res: Re
 router.put('/profile/avatar', protect, uploadAvatar.single('avatar'), async (req: AuthenticatedRequest, res: Response) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
-    const url = fileUrl(req.file);
+    let url = fileUrl(req.file);
+    if (!isCloudinaryConfigured()) {
+      const supabaseUrl = await tryUploadToSupabase(req.file.path, `avatars/${req.file.filename}`);
+      if (supabaseUrl) url = supabaseUrl;
+    }
     await req.user!.update({ profilePicture: url });
     const user = await User.findByPk(req.user!.id, { attributes: { exclude: ['password'] } });
     res.json({ success: true, data: user });
@@ -217,7 +222,11 @@ router.put('/profile/avatar', protect, uploadAvatar.single('avatar'), async (req
 router.put('/profile/cover', protect, uploadCover.single('cover'), async (req: AuthenticatedRequest, res: Response) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
-    const url = fileUrl(req.file);
+    let url = fileUrl(req.file);
+    if (!isCloudinaryConfigured()) {
+      const supabaseUrl = await tryUploadToSupabase(req.file.path, `covers/${req.file.filename}`);
+      if (supabaseUrl) url = supabaseUrl;
+    }
     await req.user!.update({ coverPhoto: url });
     const user = await User.findByPk(req.user!.id, { attributes: { exclude: ['password'] } });
     res.json({ success: true, data: user });

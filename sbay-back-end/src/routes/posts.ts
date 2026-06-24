@@ -6,6 +6,7 @@ import Post from '../models/Post';
 import Comment from '../models/Comment';
 import { protect, adminOnly } from '../middleware/auth';
 import { uploadPost, cloudinary, isCloudinaryConfigured } from '../middleware/upload';
+import { tryUploadToSupabase } from '../middleware/supabaseUpload';
 import { AuthenticatedRequest } from '../types';
 
 const fileUrl = (file: Express.Multer.File) =>
@@ -128,6 +129,8 @@ router.post('/', protect, uploadPost.single('media'), async (req: AuthenticatedR
       mediaUrl = fileUrl(req.file);
       if (!isCloudinaryConfigured()) {
         mediaPublicId = req.file.filename;
+        const supabaseUrl = await tryUploadToSupabase(req.file.path, `posts/${req.file.filename}`);
+        if (supabaseUrl) mediaUrl = supabaseUrl;
       } else {
         mediaPublicId = (req.file as Express.Multer.File & { filename: string }).filename;
       }

@@ -3,6 +3,7 @@ import path from 'path';
 import Story from '../models/Story';
 import { protect } from '../middleware/auth';
 import { uploadStory, isCloudinaryConfigured } from '../middleware/upload';
+import { tryUploadToSupabase } from '../middleware/supabaseUpload';
 import { AuthenticatedRequest } from '../types';
 import { Op } from 'sequelize';
 
@@ -31,7 +32,11 @@ router.post('/', protect, uploadStory.single('media'), async (req: Authenticated
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'Media file is required' });
 
-    const mediaUrl = fileUrl(req.file);
+    let mediaUrl = fileUrl(req.file);
+    if (!isCloudinaryConfigured()) {
+      const supabaseUrl = await tryUploadToSupabase(req.file.path, `stories/${req.file.filename}`);
+      if (supabaseUrl) mediaUrl = supabaseUrl;
+    }
     const mediaType = req.file.mimetype.startsWith('video/') ? 'video' : 'image';
     const { caption } = req.body;
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
