@@ -42,7 +42,7 @@ export default function BottomNav({ onOpenChat, toast, onViewChange }) {
               if (item.label === 'Chat') { router.push('/chat'); return; }
               if (item.view) onViewChange?.(item.view);
             }}
-            className={`flex flex-col items-center gap-0.5 px-4 py-1 cursor-pointer text-[10px] ${active === item.label ? 'text-[var(--accent)]' : 'text-[var(--text3)]'}`}
+            className={`flex flex-col items-center gap-0.5 px-2 sm:px-3 py-1 cursor-pointer text-[10px] ${active === item.label ? 'text-[var(--accent)]' : 'text-[var(--text3)]'}`}
           >
             <i className={`fa-solid ${item.icon} text-lg`} style={item.live ? { color: '#ef4444' } : {}} />
             {item.label}
@@ -50,7 +50,7 @@ export default function BottomNav({ onOpenChat, toast, onViewChange }) {
         ))}
         <div
           onClick={() => setShowFeatures(true)}
-          className="flex flex-col items-center gap-0.5 px-4 py-1 cursor-pointer text-[10px] text-[var(--text3)]"
+          className="flex flex-col items-center gap-0.5 px-2 sm:px-3 py-1 cursor-pointer text-[10px] text-[var(--text3)]"
         >
           <i className="fa-solid fa-grid-2 text-lg" />
           More

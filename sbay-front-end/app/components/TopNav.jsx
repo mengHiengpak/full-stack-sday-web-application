@@ -56,13 +56,13 @@ export default function TopNav({ onOpenChat }) {
   }, [query]);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[100] h-[56px] bg-[var(--bg2)] border-b border-[var(--border)] flex items-center px-4 gap-3 shadow-sm">
+    <nav className="fixed top-0 left-0 right-0 z-[100] h-[56px] bg-[var(--bg2)] border-b border-[var(--border)] flex items-center px-2 sm:px-4 gap-2 sm:gap-3 shadow-sm">
       <div className="flex items-center gap-1.5">
         <div className="w-8 h-8 rounded-lg bg-[var(--accent)] flex items-center justify-center text-white font-[Sora] font-bold text-base">S</div>
-        <span className="font-[Sora] font-bold text-lg text-[var(--accent)]">Sbay</span>
+        <span className="font-[Sora] font-bold text-lg text-[var(--accent)] max-[480px]:hidden">Sbay</span>
       </div>
 
-      <div ref={ref} className="flex-1 max-w-[400px] mx-2 relative">
+      <div ref={ref} className="flex-1 max-w-[400px] mx-1 sm:mx-2 relative">
         <div className="flex items-center bg-[var(--bg)] border border-[var(--border)] rounded-full px-3 gap-2">
           <i className="fa-solid fa-magnifying-glass text-xs text-[var(--text3)]" />
           <input
@@ -70,7 +70,7 @@ export default function TopNav({ onOpenChat }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search Sbay"
-            className="flex-1 bg-transparent border-none outline-none text-sm text-[var(--text)] py-1.5"
+            className="flex-1 bg-transparent border-none outline-none text-sm text-[var(--text)] py-1.5 max-[480px]:placeholder:text-transparent"
           />
           {query && <button onClick={() => { setQuery(''); setResults([]); setOpen(false); }} className="text-[var(--text3)] hover:text-[var(--text)]"><i className="fa-solid fa-xmark" /></button>}
         </div>

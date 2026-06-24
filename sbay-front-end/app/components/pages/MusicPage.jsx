@@ -255,23 +255,23 @@ export default function MusicPage({ toast }) {
           </div>
 
           {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4 pt-3 border-t border-[var(--border)]">
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-4 pt-3 border-t border-[var(--border)] gap-2">
               <div className="text-xs text-[var(--text3)]">{startItem}&ndash;{endItem} of {filtered.length}</div>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer disabled:opacity-30 disabled:cursor-default bg-[var(--bg2)] text-[var(--text2)] hover:bg-[var(--accent)] hover:text-white transition-all"
+                  className="w-7 sm:w-8 h-7 sm:h-8 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer disabled:opacity-30 disabled:cursor-default bg-[var(--bg2)] text-[var(--text2)] hover:bg-[var(--accent)] hover:text-white transition-all"
                 >
                   <i className="fa-solid fa-chevron-left" />
                 </button>
                 {(() => {
                   const pages = [];
-                  const start = Math.max(1, page - 2);
-                  const end = Math.min(totalPages, page + 2);
+                  const start = Math.max(1, page - 1);
+                  const end = Math.min(totalPages, page + 1);
                   if (start > 1) {
                     pages.push(
-                      <button key={1} onClick={() => setPage(1)} className="w-8 h-8 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer bg-[var(--bg2)] text-[var(--text2)] hover:bg-[var(--accent)] hover:text-white transition-all">1</button>
+                      <button key={1} onClick={() => setPage(1)} className="w-7 sm:w-8 h-7 sm:h-8 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer bg-[var(--bg2)] text-[var(--text2)] hover:bg-[var(--accent)] hover:text-white transition-all">1</button>
                     );
                     if (start > 2) pages.push(<span key="dots1" className="px-1 text-xs text-[var(--text3)]">&hellip;</span>);
                   }
@@ -280,7 +280,7 @@ export default function MusicPage({ toast }) {
                       <button
                         key={i}
                         onClick={() => setPage(i)}
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer transition-all ${
+                        className={`w-7 sm:w-8 h-7 sm:h-8 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer transition-all ${
                           i === page
                             ? 'bg-[var(--accent)] text-white shadow-sm'
                             : 'bg-[var(--bg2)] text-[var(--text2)] hover:bg-[var(--accent)] hover:text-white'
@@ -293,7 +293,7 @@ export default function MusicPage({ toast }) {
                   if (end < totalPages) {
                     if (end < totalPages - 1) pages.push(<span key="dots2" className="px-1 text-xs text-[var(--text3)]">&hellip;</span>);
                     pages.push(
-                      <button key={totalPages} onClick={() => setPage(totalPages)} className="w-8 h-8 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer bg-[var(--bg2)] text-[var(--text2)] hover:bg-[var(--accent)] hover:text-white transition-all">{totalPages}</button>
+                      <button key={totalPages} onClick={() => setPage(totalPages)} className="w-7 sm:w-8 h-7 sm:h-8 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer bg-[var(--bg2)] text-[var(--text2)] hover:bg-[var(--accent)] hover:text-white transition-all">{totalPages}</button>
                     );
                   }
                   return pages;
@@ -301,7 +301,7 @@ export default function MusicPage({ toast }) {
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer disabled:opacity-30 disabled:cursor-default bg-[var(--bg2)] text-[var(--text2)] hover:bg-[var(--accent)] hover:text-white transition-all"
+                  className="w-7 sm:w-8 h-7 sm:h-8 rounded-lg flex items-center justify-center text-xs border-none cursor-pointer disabled:opacity-30 disabled:cursor-default bg-[var(--bg2)] text-[var(--text2)] hover:bg-[var(--accent)] hover:text-white transition-all"
                 >
                   <i className="fa-solid fa-chevron-right" />
                 </button>

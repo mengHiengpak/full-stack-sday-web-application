@@ -439,7 +439,7 @@ export default function ChatPage() {
 
   const CreateGroupModal = ({ mobile }) => (
     <div className={mobile ? 'fixed inset-0 z-[300] bg-[var(--bg2)] flex flex-col' : 'fixed inset-0 z-[300] bg-black/50 flex items-center justify-center'}>
-      <div className={mobile ? 'flex flex-col h-full' : 'bg-[var(--bg2)] rounded-2xl w-[420px] max-h-[80vh] flex flex-col shadow-lg'}>
+      <div className={mobile ? 'flex flex-col h-full' : 'bg-[var(--bg2)] rounded-2xl w-[420px] max-[440px]:w-[95vw] max-h-[80vh] flex flex-col shadow-lg'}>
         <div className="flex items-center gap-3 px-4 py-4 border-b border-[var(--border)]">
           <button onClick={() => { setShowCreateGroup(false); setGroupName(''); setSelectedMembers([]); setGroupSearch(''); }} className="w-8 h-8 rounded-full bg-[var(--bg)] flex items-center justify-center text-[var(--text2)] hover:bg-[var(--bg3)]">
             <i className="fa-solid fa-xmark" />
@@ -528,7 +528,7 @@ export default function ChatPage() {
 
   const NewChatModal = ({ mobile }) => (
     <div className={mobile ? 'fixed inset-0 z-[300] bg-[var(--bg2)] flex flex-col' : 'fixed inset-0 z-[300] bg-black/50 flex items-center justify-center'}>
-      <div className={mobile ? 'flex flex-col h-full' : 'bg-[var(--bg2)] rounded-2xl w-[420px] max-h-[80vh] flex flex-col shadow-lg'}>
+      <div className={mobile ? 'flex flex-col h-full' : 'bg-[var(--bg2)] rounded-2xl w-[420px] max-[440px]:w-[95vw] max-h-[80vh] flex flex-col shadow-lg'}>
         <div className="flex items-center gap-3 px-4 py-4 border-b border-[var(--border)]">
           <button onClick={() => { setShowNewChat(false); setShowMobileNewChat(false); setUserSearch(''); setUserResults([]); }} className="w-8 h-8 rounded-full bg-[var(--bg)] flex items-center justify-center text-[var(--text2)] hover:bg-[var(--bg3)]">
             <i className="fa-solid fa-xmark" />
@@ -628,7 +628,7 @@ export default function ChatPage() {
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--accent)] text-white text-sm font-semibold hover:bg-[var(--accent2)] transition-colors"
                   >
                     <i className="fa-solid fa-plus text-xs" />
-                    <span className="max-[400px]:hidden">New Chat</span>
+                    <span className="max-[500px]:hidden">New Chat</span>
                   </button>
                 </div>
               </div>
