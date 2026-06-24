@@ -30,8 +30,10 @@ export default function RegisterPage() {
     } catch (err) {
       if (err.code === 'ERR_NETWORK') {
         setError('Cannot reach server. Make sure the backend is running.');
+      } else if (err.response) {
+        setError(err.response?.data?.message || `Server error (${err.response.status})`);
       } else {
-        setError(err.response?.data?.message || 'Registration failed');
+        setError('Registration failed. Check that API_URL is set correctly on Render.');
       }
     } finally {
       setLoading(false);
