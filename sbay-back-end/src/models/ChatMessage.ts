@@ -79,6 +79,10 @@ ChatMessage.init(
   {
     sequelize,
     tableName: 'ChatMessages',
+    indexes: [
+      { name: 'chat_messages_chat_id_created_at_idx', fields: ['chatId', 'createdAt'] },
+      { name: 'chat_messages_sender_id_idx', fields: ['senderId'] },
+    ],
   }
 );
 

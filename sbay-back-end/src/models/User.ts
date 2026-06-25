@@ -127,6 +127,9 @@ User.init(
         }
       },
     },
+    indexes: [
+      { name: 'users_created_at_idx', fields: ['createdAt'] },
+    ],
   }
 );
 

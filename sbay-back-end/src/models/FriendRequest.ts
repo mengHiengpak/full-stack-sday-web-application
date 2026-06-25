@@ -60,6 +60,10 @@ FriendRequest.init(
   {
     sequelize,
     tableName: 'FriendRequests',
+    indexes: [
+      { name: 'friend_requests_sender_id_status_idx', fields: ['senderId', 'status'] },
+      { name: 'friend_requests_receiver_id_status_idx', fields: ['receiverId', 'status'] },
+    ],
   }
 );
 

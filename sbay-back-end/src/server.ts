@@ -55,21 +55,26 @@ if (!isCloudinaryConfigured()) {
   app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 }
 
-sequelize.authenticate()
-  .then(() => console.log('✅ PostgreSQL Connected'))
-  .catch(err => console.error('❌ PostgreSQL Error:', err));
+const startServer = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('✅ PostgreSQL Connected');
 
-sequelize.sync({ alter: process.env.NODE_ENV === 'development' })
-  .then(async () => {
+    await sequelize.sync({ alter: true });
     console.log('✅ Database synced');
+
     const [admin] = await User.findOrCreate({
       where: { email: 'admin@sbay.com' },
       defaults: { username: 'admin', email: 'admin@sbay.com', password: 'admin123456', role: 'admin' as const },
     });
     if (admin) console.log('✅ Seed: admin@sbay.com / admin123456');
-    console.log('✅ Seed: admin@sbay.com / admin123456');
-  })
-  .catch(err => console.error('❌ Sync Error:', err));
+
+    app.listen(PORT, () => console.log(`🚀 Sbay Server running on port ${PORT}`));
+  } catch (err) {
+    console.error('❌ Startup Error:', err);
+    process.exit(1);
+  }
+};
 
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/users', userRoutes);
@@ -117,4 +122,14 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`🚀 Sbay Server running on port ${PORT}`));
+
+startServer();
+
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down...');
+  server.close(() => process.exit(0));
+});
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down...');
+  server.close(() => process.exit(0));
+});

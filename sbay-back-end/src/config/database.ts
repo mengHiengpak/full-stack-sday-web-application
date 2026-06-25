@@ -10,14 +10,17 @@ const sequelize = new Sequelize(dbUrl || 'postgresql://localhost:5432/postgres',
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
   dialectOptions: {
     ssl: process.env.DB_SSL === 'true' ? { require: true, rejectUnauthorized: false } : false,
+    statement_timeout: 30000,
+    idle_in_transaction_session_timeout: 60000,
   },
   pool: {
-    max: 10,
-    min: 0,
+    max: 20,
+    min: 2,
     acquire: 30000,
     idle: 10000,
+    evict: 1000,
   },
-  retry: { max: 2 },
+  retry: { max: 3 },
 });
 
 export default sequelize;

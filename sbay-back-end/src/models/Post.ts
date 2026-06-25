@@ -112,6 +112,10 @@ Post.init(
   {
     sequelize,
     tableName: 'Posts',
+    indexes: [
+      { name: 'posts_author_id_created_at_idx', fields: ['authorId', 'createdAt'] },
+      { name: 'posts_visibility_created_at_idx', fields: ['visibility', 'createdAt'] },
+    ],
   }
 );
 

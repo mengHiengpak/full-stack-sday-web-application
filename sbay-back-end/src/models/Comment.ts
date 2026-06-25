@@ -76,6 +76,10 @@ Comment.init(
   {
     sequelize,
     tableName: 'Comments',
+    indexes: [
+      { name: 'comments_post_id_created_at_idx', fields: ['postId', 'createdAt'] },
+      { name: 'comments_author_id_idx', fields: ['authorId'] },
+    ],
   }
 );
 
