@@ -575,8 +575,12 @@ export default function ChatPage() {
                 key={u.id}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[var(--bg3)] cursor-pointer transition-colors"
               >
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#c084fc] to-[#a855f7] flex items-center justify-center font-bold text-sm text-white flex-shrink-0">
-                  {u.username?.slice(0, 2).toUpperCase() || '?'}
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#c084fc] to-[#a855f7] flex items-center justify-center font-bold text-sm text-white flex-shrink-0 overflow-hidden">
+                  {u.profilePicture ? (
+                    <img src={u.profilePicture} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    u.username?.slice(0, 2).toUpperCase() || '?'
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-semibold text-[var(--text)] truncate">{u.username}</div>
@@ -684,8 +688,14 @@ export default function ChatPage() {
                         }`}
                       >
                         <div className="relative flex-shrink-0">
-                          <div className={`w-12 h-12 ${isGroup ? 'rounded-[14px]' : 'rounded-full'} bg-gradient-to-br from-[#c084fc] to-[#a855f7] flex items-center justify-center font-bold text-sm text-white`}>
-                            {isGroup ? <i className="fa-solid fa-users text-base" /> : (other.username?.slice(0, 2).toUpperCase() || '?')}
+                          <div className={`w-12 h-12 ${isGroup ? 'rounded-[14px]' : 'rounded-full'} bg-gradient-to-br from-[#c084fc] to-[#a855f7] flex items-center justify-center font-bold text-sm text-white overflow-hidden`}>
+                            {isGroup ? (
+                              <i className="fa-solid fa-users text-base" />
+                            ) : other.profilePicture ? (
+                              <img src={other.profilePicture} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              other.username?.slice(0, 2).toUpperCase() || '?'
+                            )}
                           </div>
                           {!isGroup && <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-[var(--online)] border-2 border-[var(--bg2)]" />}
                         </div>
@@ -738,8 +748,14 @@ export default function ChatPage() {
                     >
                       <i className="fa-solid fa-chevron-left text-sm" />
                     </button>
-                    <div className={`w-10 h-10 ${activeChat.isGroup ? 'rounded-[12px]' : 'rounded-full'} bg-gradient-to-br from-[#c084fc] to-[#a855f7] flex items-center justify-center font-bold text-sm text-white flex-shrink-0`}>
-                      {activeChat.isGroup ? <i className="fa-solid fa-users text-sm" /> : (otherUser(activeChat).username?.slice(0, 2).toUpperCase() || '?')}
+                    <div className={`w-10 h-10 ${activeChat.isGroup ? 'rounded-[12px]' : 'rounded-full'} bg-gradient-to-br from-[#c084fc] to-[#a855f7] flex items-center justify-center font-bold text-sm text-white flex-shrink-0 overflow-hidden`}>
+                      {activeChat.isGroup ? (
+                        <i className="fa-solid fa-users text-sm" />
+                      ) : otherUser(activeChat).profilePicture ? (
+                        <img src={otherUser(activeChat).profilePicture} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        otherUser(activeChat).username?.slice(0, 2).toUpperCase() || '?'
+                      )}
                     </div>
                     <div className="flex-1">
                       <div className="font-semibold text-sm text-[var(--text)]">
@@ -809,8 +825,12 @@ export default function ChatPage() {
                         return (
                           <div key={msg.id} className={`flex items-end gap-2 ${isMine ? 'flex-row-reverse' : ''}`}>
                             {!isMine && (
-                              <div className={`${showSender ? 'w-7 h-7' : 'w-7 h-7'} rounded-full bg-[var(--accent)] flex items-center justify-center font-bold text-[10px] text-white flex-shrink-0 self-end`}>
-                                {avatarLetter}
+                              <div className={`${showSender ? 'w-7 h-7' : 'w-7 h-7'} rounded-full bg-[var(--accent)] flex items-center justify-center font-bold text-[10px] text-white flex-shrink-0 self-end overflow-hidden`}>
+                                {msg.senderProfilePicture ? (
+                                  <img src={msg.senderProfilePicture} alt="" className="w-full h-full object-cover" />
+                                ) : (
+                                  avatarLetter
+                                )}
                               </div>
                             )}
                             <div className={`max-w-[70%] ${isMine ? 'items-end' : 'items-start'} flex flex-col`}>
@@ -846,8 +866,12 @@ export default function ChatPage() {
                     )}
                     {isTyping && (
                       <div className="flex items-end gap-2">
-                        <div className="w-7 h-7 rounded-full bg-[var(--accent)] flex items-center justify-center font-bold text-[10px] text-white flex-shrink-0">
-                          {otherUser(activeChat).username?.slice(0, 2).toUpperCase() || '?'}
+                        <div className="w-7 h-7 rounded-full bg-[var(--accent)] flex items-center justify-center font-bold text-[10px] text-white flex-shrink-0 overflow-hidden">
+                          {otherUser(activeChat).profilePicture ? (
+                            <img src={otherUser(activeChat).profilePicture} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            otherUser(activeChat).username?.slice(0, 2).toUpperCase() || '?'
+                          )}
                         </div>
                         <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl rounded-bl-md px-3 py-2">
                           <div className="flex items-center gap-1">
