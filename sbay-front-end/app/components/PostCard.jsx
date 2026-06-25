@@ -138,13 +138,10 @@ export default function PostCard({ post, toast, onOpenProfile, onShare, onDelete
       <div className="flex items-center gap-3 px-4 pt-4 pb-3">
         <div
           onClick={() => router.push(`/profile/${author.id}`)}
-          className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-sm text-white cursor-pointer overflow-hidden bg-[var(--accent)]"
+          className="w-10 h-10 rounded-full flex-shrink-0 font-bold text-sm text-white cursor-pointer overflow-hidden bg-[var(--accent)] relative"
         >
-          {author.profilePicture ? (
-            <img src={author.profilePicture} alt="" className="w-full h-full object-cover" />
-          ) : (
-            initials
-          )}
+          {author.profilePicture && <img src={author.profilePicture} alt="" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />}
+          <div className="w-full h-full flex items-center justify-center">{initials}</div>
         </div>
         <div>
           <div onClick={() => router.push(`/profile/${author.id}`)} className="font-semibold text-sm text-[var(--text)] cursor-pointer hover:underline">{authorName}</div>
@@ -263,12 +260,9 @@ export default function PostCard({ post, toast, onOpenProfile, onShare, onDelete
         {commentsLoading && <div className="text-center text-xs text-[var(--text3)] py-3">Loading comments...</div>}
         {comments.map((c) => (
           <div key={c.id} className="flex gap-2.5 mt-3">
-            <div className="w-8 h-8 rounded-full bg-[var(--accent)] flex items-center justify-center font-bold text-xs text-white flex-shrink-0 overflow-hidden">
-              {c.author?.profilePicture ? (
-                <img src={c.author.profilePicture} alt="" className="w-full h-full object-cover" />
-              ) : (
-                c.author?.username?.slice(0, 2).toUpperCase() || '?'
-              )}
+            <div className="w-8 h-8 rounded-full bg-[var(--accent)] font-bold text-xs text-white flex-shrink-0 overflow-hidden relative">
+              {c.author?.profilePicture && <img src={c.author.profilePicture} alt="" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />}
+              <div className="w-full h-full flex items-center justify-center">{c.author?.username?.slice(0, 2).toUpperCase() || '?'}</div>
             </div>
             <div className="bg-[var(--bg3)] rounded-lg px-3 py-2 flex-1">
               <div className="text-xs font-semibold mb-0.5">{c.author?.username || 'Unknown'}</div>
@@ -285,12 +279,9 @@ export default function PostCard({ post, toast, onOpenProfile, onShare, onDelete
           </div>
         ))}
         <div className="flex gap-2 items-center pt-3">
-          <div className="w-8 h-8 rounded-full bg-[var(--accent)] flex items-center justify-center font-bold text-xs text-white flex-shrink-0 overflow-hidden">
-            {user?.profilePicture ? (
-              <img src={user.profilePicture} alt="" className="w-full h-full object-cover" />
-            ) : (
-              user?.username?.slice(0, 2).toUpperCase() || '?'
-            )}
+          <div className="w-8 h-8 rounded-full bg-[var(--accent)] font-bold text-xs text-white flex-shrink-0 overflow-hidden relative">
+            {user?.profilePicture && <img src={user.profilePicture} alt="" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />}
+            <div className="w-full h-full flex items-center justify-center">{user?.username?.slice(0, 2).toUpperCase() || '?'}</div>
           </div>
           <input
             data-comment-input
@@ -323,12 +314,9 @@ export default function PostCard({ post, toast, onOpenProfile, onShare, onDelete
               ) : (
                 reactionsList.map(r => (
                   <div key={r.id} className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-[var(--accent)] flex items-center justify-center font-bold text-xs text-white flex-shrink-0 overflow-hidden">
-                      {r.user?.profilePicture ? (
-                        <img src={r.user.profilePicture} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        r.user?.username?.slice(0, 2).toUpperCase() || '?'
-                      )}
+                    <div className="w-8 h-8 rounded-full bg-[var(--accent)] font-bold text-xs text-white flex-shrink-0 overflow-hidden relative">
+                      {r.user?.profilePicture && <img src={r.user.profilePicture} alt="" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />}
+                      <div className="w-full h-full flex items-center justify-center">{r.user?.username?.slice(0, 2).toUpperCase() || '?'}</div>
                     </div>
                     <span className="flex-1 text-sm text-[var(--text2)]">{r.user?.username || 'Unknown'}</span>
                     <span className="text-lg">{Object.keys(EMOJI_MAP).find(k => EMOJI_MAP[k] === r.type) || '👍'}</span>

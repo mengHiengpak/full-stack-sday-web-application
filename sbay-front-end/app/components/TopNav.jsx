@@ -81,8 +81,9 @@ export default function TopNav({ onOpenChat }) {
             ) : (
               results.map((u) => (
                 <div key={u.id} className="flex items-center gap-3 px-3 py-2 hover:bg-[var(--bg3)] cursor-pointer" onClick={() => { setOpen(false); setQuery(''); router.push(`/profile/${u.id}`); }}>
-                  <div className="w-8 h-8 rounded-full bg-[var(--accent)] flex items-center justify-center font-bold text-xs text-white flex-shrink-0 overflow-hidden">
-                    {u.profilePicture ? <img src={u.profilePicture} alt="" className="w-full h-full object-cover" /> : u.username?.slice(0, 2).toUpperCase()}
+                  <div className="w-8 h-8 rounded-full bg-[var(--accent)] font-bold text-xs text-white flex-shrink-0 overflow-hidden relative">
+                    {u.profilePicture && <img src={u.profilePicture} alt="" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />}
+                    <div className="w-full h-full flex items-center justify-center">{u.username?.slice(0, 2).toUpperCase()}</div>
                   </div>
                   <div>
                     <div className="text-sm font-semibold text-[var(--text)]">{u.username}</div>
@@ -111,12 +112,9 @@ export default function TopNav({ onOpenChat }) {
           {notifOpen && <NotificationPanel open={notifOpen} onClose={() => setNotifOpen(false)} onRead={(n) => setUnreadCount(prev => Math.max(0, prev - n))} />}
         </div>
         <div className="relative group">
-          <button onClick={() => router.push(`/profile/${user?.id}`)} className="w-[36px] h-[36px] rounded-full bg-[var(--accent)] flex items-center justify-center font-bold text-sm text-white cursor-pointer flex-shrink-0 overflow-hidden">
-            {user?.profilePicture ? (
-              <img src={user.profilePicture} alt="" className="w-full h-full object-cover" />
-            ) : (
-              user?.username?.slice(0, 2).toUpperCase() || '?'
-            )}
+          <button onClick={() => router.push(`/profile/${user?.id}`)} className="w-[36px] h-[36px] rounded-full bg-[var(--accent)] font-bold text-sm text-white cursor-pointer flex-shrink-0 overflow-hidden relative">
+            {user?.profilePicture && <img src={user.profilePicture} alt="" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />}
+            <div className="w-full h-full flex items-center justify-center">{user?.username?.slice(0, 2).toUpperCase() || '?'}</div>
           </button>
           <div className="absolute right-0 top-full mt-1.5 w-40 bg-[var(--bg2)] border border-[var(--border)] rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
             <button onClick={() => router.push(`/profile/${user?.id}`)} className="w-full text-left px-4 py-2.5 text-sm text-[var(--text2)] hover:bg-[var(--bg3)] rounded-lg">

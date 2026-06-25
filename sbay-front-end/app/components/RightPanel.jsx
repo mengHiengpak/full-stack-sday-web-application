@@ -84,13 +84,10 @@ export default function RightPanel({ toast }) {
             <div key={r.id} className="flex items-center gap-3 mb-3">
               <div
                 onClick={() => router.push(`/profile/${r.sender?.id}`)}
-                className="w-10 h-10 rounded-full bg-[var(--accent)] flex items-center justify-center text-xs font-bold text-white flex-shrink-0 overflow-hidden cursor-pointer hover:opacity-80"
+                className="w-10 h-10 rounded-full bg-[var(--accent)] text-xs font-bold text-white flex-shrink-0 overflow-hidden cursor-pointer hover:opacity-80 relative"
               >
-                {r.sender?.profilePicture ? (
-                  <img src={r.sender.profilePicture} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  r.sender?.username?.slice(0, 2).toUpperCase() || '?'
-                )}
+                {r.sender?.profilePicture && <img src={r.sender.profilePicture} alt="" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />}
+                <div className="w-full h-full flex items-center justify-center">{r.sender?.username?.slice(0, 2).toUpperCase() || '?'}</div>
               </div>
               <div
                 onClick={() => router.push(`/profile/${r.sender?.id}`)}
@@ -125,13 +122,10 @@ export default function RightPanel({ toast }) {
               <div key={u.id} className="flex items-center gap-3">
                 <div
                   onClick={() => router.push(`/profile/${u.id}`)}
-                  className="w-10 h-10 rounded-full bg-[var(--accent)] flex items-center justify-center text-xs font-bold text-white flex-shrink-0 overflow-hidden cursor-pointer hover:opacity-80"
+                  className="w-10 h-10 rounded-full bg-[var(--accent)] text-xs font-bold text-white flex-shrink-0 overflow-hidden cursor-pointer hover:opacity-80 relative"
                 >
-                  {u.profilePicture ? (
-                    <img src={u.profilePicture} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    u.username?.slice(0, 2).toUpperCase() || '?'
-                  )}
+                  {u.profilePicture && <img src={u.profilePicture} alt="" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />}
+                  <div className="w-full h-full flex items-center justify-center">{u.username?.slice(0, 2).toUpperCase() || '?'}</div>
                 </div>
                 <div
                   onClick={() => router.push(`/profile/${u.id}`)}
