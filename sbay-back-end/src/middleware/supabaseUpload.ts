@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import supabase from '../config/supabase';
+import { storageUrl, headers } from '../config/supabase';
 
 const BUCKET = 'sbay-media';
 
@@ -17,11 +17,20 @@ export const tryUploadToSupabase = async (localPath: string, storagePath: string
     const ext = path.extname(localPath).slice(1).toLowerCase();
     const contentType = MIME_MAP[ext] || 'application/octet-stream';
 
-    const { error } = await supabase.storage.from(BUCKET).upload(storagePath, buffer, { upsert: true, contentType });
-    if (error) throw error;
+    const url = `${storageUrl}/object/${BUCKET}/${storagePath}`;
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: { ...headers, 'Content-Type': contentType },
+      body: buffer,
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      console.error(`Supabase upload failed (${res.status}): ${text}`);
+      return null;
+    }
 
-    const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(storagePath);
-    return urlData.publicUrl;
+    const publicUrl = `${storageUrl}/object/public/${BUCKET}/${storagePath}`;
+    return publicUrl;
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'unknown';
     console.error('Supabase upload error:', msg);
