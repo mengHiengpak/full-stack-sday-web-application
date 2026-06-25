@@ -122,11 +122,11 @@ router.get('/:id', protect, async (req: AuthenticatedRequest, res: Response) => 
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
     if (user.profilePicture && !user.profilePicture.startsWith('http')) {
-      const localPath = path.join(__dirname, '../uploads', user.profilePicture.replace('/uploads/', ''));
+      const localPath = path.join(__dirname, '../../uploads', user.profilePicture.replace('/uploads/', ''));
       try { if (!fs.existsSync(localPath)) { await user.update({ profilePicture: '' }); user.profilePicture = ''; } } catch {}
     }
     if (user.coverPhoto && !user.coverPhoto.startsWith('http')) {
-      const localPath = path.join(__dirname, '../uploads', user.coverPhoto.replace('/uploads/', ''));
+      const localPath = path.join(__dirname, '../../uploads', user.coverPhoto.replace('/uploads/', ''));
       try { if (!fs.existsSync(localPath)) { await user.update({ coverPhoto: '' }); user.coverPhoto = ''; } } catch {}
     }
 
