@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/context/AuthContext';
 
 const featureItems = [
   { icon: 'fa-store', label: 'Marketplace', route: '/marketplace', color: '#34d399' },
@@ -19,6 +20,7 @@ const featureItems = [
 ];
 
 export default function BottomNav({ onOpenChat, toast, onViewChange }) {
+  const { user, logout } = useAuth();
   const router = useRouter();
   const [active, setActive] = useState('Home');
   const [showFeatures, setShowFeatures] = useState(false);
@@ -79,6 +81,15 @@ export default function BottomNav({ onOpenChat, toast, onViewChange }) {
                   <span className="text-[11px] font-semibold text-[var(--text2)] text-center leading-tight">{f.label}</span>
                 </div>
               ))}
+              <div
+                onClick={() => { setShowFeatures(false); logout(); }}
+                className="flex flex-col items-center gap-2 p-3 rounded-xl bg-[var(--bg)] hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer active:scale-95 transition-all"
+              >
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl" style={{ background: '#ef444420', color: '#ef4444' }}>
+                  <i className="fa-solid fa-right-from-bracket" />
+                </div>
+                <span className="text-[11px] font-semibold text-red-500 text-center leading-tight">Sign Out</span>
+              </div>
             </div>
           </div>
         </div>
