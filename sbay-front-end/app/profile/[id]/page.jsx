@@ -35,6 +35,8 @@ export default function ProfilePage() {
   const [showFriendsModal, setShowFriendsModal] = useState(false);
   const [friendsList, setFriendsList] = useState([]);
   const [friendsLoading, setFriendsLoading] = useState(false);
+  const [pfpError, setPfpError] = useState(false);
+  const [coverError, setCoverError] = useState(false);
 
   const avatarRef = useRef(null);
   const coverRef = useRef(null);
@@ -44,6 +46,8 @@ export default function ProfilePage() {
       const res = await usersAPI.get(profileId);
       const data = res.data.data;
       setProfile(data);
+      setPfpError(false);
+      setCoverError(false);
     } catch {
       toast?.('User not found');
       router.replace('/');
@@ -179,8 +183,8 @@ export default function ProfilePage() {
         <main className="flex-1 ml-[260px] mr-[300px] max-[1100px]:mr-0 max-[780px]:ml-0 max-[780px]:mb-[56px]">
           <div className="bg-[var(--bg2)] border-b border-[var(--border)]">
             <div className="relative h-[280px] bg-[var(--bg3)] overflow-hidden">
-              {profile?.coverPhoto ? (
-                <img src={profile.coverPhoto} alt="" className="w-full h-full object-cover" />
+              {profile?.coverPhoto && !coverError ? (
+                <img src={profile.coverPhoto} alt="" className="w-full h-full object-cover" onError={() => setCoverError(true)} />
               ) : (
                 <div className="w-full h-full bg-gradient-to-r from-[var(--accent)]/30 to-[var(--accent2)]/30" />
               )}
@@ -197,8 +201,8 @@ export default function ProfilePage() {
               <div className="flex items-end -mt-[60px] mb-3 max-[480px]:flex-wrap">
                 <div className="relative flex-shrink-0">
                   <div className="w-[120px] h-[120px] rounded-full border-4 border-[var(--bg2)] bg-[var(--accent)] flex items-center justify-center text-4xl font-bold text-white overflow-hidden shadow-md max-[480px]:w-[80px] max-[480px]:h-[80px] max-[480px]:text-2xl">
-                    {profile?.profilePicture ? (
-                      <img src={profile.profilePicture} alt="" className="w-full h-full object-cover" />
+                    {profile?.profilePicture && !pfpError ? (
+                      <img src={profile.profilePicture} alt="" className="w-full h-full object-cover" onError={() => setPfpError(true)} />
                     ) : (
                       initials
                     )}

@@ -31,6 +31,8 @@ export default function StoryViewer({ stories, startIndex, onClose, toast }) {
   const [flyEmojis, setFlyEmojis] = useState([]);
   const [transitioning, setTransitioning] = useState(false);
   const [showReactionsPopup, setShowReactionsPopup] = useState(false);
+  const [mediaError, setMediaError] = useState(false);
+  const [pfpError, setPfpError] = useState(false);
   const animRef = useRef(null);
   const touchStartX = useRef(null);
   const touchStartY = useRef(null);
@@ -62,6 +64,8 @@ export default function StoryViewer({ stories, startIndex, onClose, toast }) {
     setProgress(0);
     setPaused(false);
     setTransitioning(false);
+    setMediaError(false);
+    setPfpError(false);
   }, [idx, loadReactions, loadComments]);
 
   useEffect(() => {
@@ -248,8 +252,8 @@ export default function StoryViewer({ stories, startIndex, onClose, toast }) {
         <div className="absolute top-4 left-3 right-3 z-20 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-full border-2 border-white/60 overflow-hidden flex-shrink-0 bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xs font-bold text-white shadow-lg">
-              {story.author?.profilePicture ? (
-                <img src={story.author.profilePicture} alt="" className="w-full h-full object-cover" />
+              {story.author?.profilePicture && !pfpError ? (
+                <img src={story.author.profilePicture} alt="" className="w-full h-full object-cover" onError={() => setPfpError(true)} />
               ) : (
                 initials
               )}
@@ -268,7 +272,7 @@ export default function StoryViewer({ stories, startIndex, onClose, toast }) {
           className={`w-full h-full rounded-2xl overflow-hidden bg-black transition-transform duration-200 ${transitioning ? 'scale-95 opacity-50' : 'scale-100 opacity-100'}`}
           onDoubleClick={handleDoubleTap}
         >
-          {story.mediaUrl ? (
+          {story.mediaUrl && !mediaError ? (
             story.mediaType === 'video' ? (
               <video
                 key={story.id}
@@ -277,9 +281,10 @@ export default function StoryViewer({ stories, startIndex, onClose, toast }) {
                 muted
                 playsInline
                 className="w-full h-full object-cover"
+                onError={() => setMediaError(true)}
               />
             ) : (
-              <img key={story.id} src={story.mediaUrl} alt="" className="w-full h-full object-cover" />
+              <img key={story.id} src={story.mediaUrl} alt="" className="w-full h-full object-cover" onError={() => setMediaError(true)} />
             )
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">

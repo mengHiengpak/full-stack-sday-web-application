@@ -10,6 +10,8 @@ export default function StoriesRow({ toast }) {
   const [stories, setStories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewerIdx, setViewerIdx] = useState(-1);
+  const [brokenMedia, setBrokenMedia] = useState(new Set());
+  const [brokenPfps, setBrokenPfps] = useState(new Set());
 
   useEffect(() => {
     loadStories();
@@ -49,11 +51,11 @@ export default function StoriesRow({ toast }) {
         ) : (
           stories.map((s, i) => (
             <div key={s.id} onClick={() => setViewerIdx(i)} className="flex-shrink-0 w-28 h-40 rounded-lg relative cursor-pointer overflow-hidden border border-[var(--border)] hover:border-[var(--accent)] transition-colors">
-              {s.mediaUrl ? (
+              {s.mediaUrl && !brokenMedia.has(s.id) ? (
                 s.mediaType === 'video' ? (
-                  <video src={s.mediaUrl} className="w-full h-full object-cover" />
+                  <video src={s.mediaUrl} className="w-full h-full object-cover" onError={() => setBrokenMedia(prev => new Set(prev).add(s.id))} />
                 ) : (
-                  <img src={s.mediaUrl} alt="" className="w-full h-full object-cover" />
+                  <img src={s.mediaUrl} alt="" className="w-full h-full object-cover" onError={() => setBrokenMedia(prev => new Set(prev).add(s.id))} />
                 )
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-4xl bg-[var(--accent)]">
@@ -62,8 +64,8 @@ export default function StoriesRow({ toast }) {
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               <div className="absolute top-2 left-2 w-6 h-6 rounded-full bg-[var(--accent)] flex items-center justify-center text-[9px] font-bold text-white border border-white overflow-hidden">
-                {s.author?.profilePicture ? (
-                  <img src={s.author.profilePicture} alt="" className="w-full h-full object-cover" />
+                {s.author?.profilePicture && !brokenPfps.has(s.id) ? (
+                  <img src={s.author.profilePicture} alt="" className="w-full h-full object-cover" onError={() => setBrokenPfps(prev => new Set(prev).add(s.id))} />
                 ) : (
                   s.author?.username?.slice(0, 2).toUpperCase() || '?'
                 )}

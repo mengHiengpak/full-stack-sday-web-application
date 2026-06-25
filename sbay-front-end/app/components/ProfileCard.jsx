@@ -15,6 +15,7 @@ export default function ProfileCard({ open, onClose, toast, name, initials, user
   const [editWebsite, setEditWebsite] = useState('');
   const [editLocation, setEditLocation] = useState('');
   const [saving, setSaving] = useState(false);
+  const [pfpError, setPfpError] = useState(false);
 
   useEffect(() => {
     if (open && userId && userId !== user?.id) {
@@ -24,6 +25,7 @@ export default function ProfileCard({ open, onClose, toast, name, initials, user
 
   const loadProfile = async () => {
     setLoading(true);
+    setPfpError(false);
     try {
       const res = await usersAPI.get(userId);
       setProfileUser(res.data.data);
@@ -90,8 +92,9 @@ export default function ProfileCard({ open, onClose, toast, name, initials, user
         <div className="absolute -top-[60px] left-1/2 -translate-x-1/2 w-[260px] h-[260px] rounded-full bg-[radial-gradient(circle,rgba(108,99,255,.25)_0%,transparent_70%)] pointer-events-none z-0" />
         <div className="flex flex-col items-center pt-8 px-6 pb-5 relative z-[1]">
           <button onClick={onClose} className="absolute top-3.5 right-3.5 bg-[var(--card)] border border-[var(--border)] rounded-full w-8 h-8 text-[var(--text2)] cursor-pointer flex items-center justify-center text-sm hover:bg-[var(--card2)] hover:text-[var(--text)] transition-all"><i className="fa-solid fa-xmark" /></button>
-          <div className="w-[88px] h-[88px] rounded-[28px] flex items-center justify-center text-[32px] font-black text-white font-[Sora] shadow-[0_12px_40px_rgba(108,99,255,.4)] mb-3.5 relative" style={{ background: profileUser?.profilePicture ? `url(${profileUser.profilePicture})` : 'linear-gradient(135deg,var(--accent),var(--accent2))', backgroundSize: 'cover' }}>
-            {!profileUser?.profilePicture && displayInitials}
+          <div className="w-[88px] h-[88px] rounded-[28px] flex items-center justify-center text-[32px] font-black text-white font-[Sora] shadow-[0_12px_40px_rgba(108,99,255,.4)] mb-3.5 relative" style={{ background: profileUser?.profilePicture && !pfpError ? `url(${profileUser.profilePicture})` : 'linear-gradient(135deg,var(--accent),var(--accent2))', backgroundSize: 'cover' }}>
+            {(!profileUser?.profilePicture || pfpError) && displayInitials}
+            {profileUser?.profilePicture && !pfpError && <img src={profileUser.profilePicture} alt="" className="hidden" onError={() => setPfpError(true)} />}
             <div className="absolute -bottom-1 -right-1 w-[22px] h-[22px] rounded-full bg-[var(--online)] border-3 border-[var(--bg2)]" />
           </div>
           <div className="font-[Sora] text-xl font-extrabold text-[var(--text)] mb-1">{displayName}</div>
