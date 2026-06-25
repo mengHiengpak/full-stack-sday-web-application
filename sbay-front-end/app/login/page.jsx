@@ -57,11 +57,11 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
             <input
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-[var(--bg2)] border border-[var(--border)] rounded px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]"
-              placeholder="Email address"
+              placeholder="Email or username"
             />
           </div>
           <div>

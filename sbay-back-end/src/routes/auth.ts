@@ -44,9 +44,16 @@ router.post('/login', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { email, password } = req.body;
     if (!email || !password)
-      return res.status(400).json({ success: false, message: 'Email and password required' });
+      return res.status(400).json({ success: false, message: 'Email/username and password required' });
 
-    const user = await User.unscoped().findOne({ where: { email } });
+    const user = await User.unscoped().findOne({
+      where: {
+        [Op.or]: [
+          { email: email.toLowerCase() },
+          { username: email },
+        ],
+      },
+    });
     if (!user || !(await user.matchPassword(password)))
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
