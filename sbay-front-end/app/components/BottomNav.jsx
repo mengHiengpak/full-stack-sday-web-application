@@ -54,7 +54,7 @@ export default function BottomNav({ onOpenChat, toast, onViewChange }) {
           onClick={() => setShowFeatures(true)}
           className="flex flex-col items-center gap-0.5 px-2 sm:px-3 py-1 cursor-pointer text-[10px] text-[var(--text3)]"
         >
-          <i className="fa-solid fa-grid-2 text-lg" />
+          <i className="fa-solid fa-right-from-bracket text-lg" />
           More
         </div>
       </div>
