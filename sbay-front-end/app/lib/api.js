@@ -64,7 +64,9 @@ export const usersAPI = {
 
 export const storiesAPI = {
   get: () => API.get('/stories'),
+  getOne: (id) => API.get(`/stories/${id}`),
   create: (data) => API.post('/stories', data),
+  update: (id, data) => API.put(`/stories/${id}`, data),
   delete: (id) => API.delete(`/stories/${id}`),
 };
 

@@ -263,9 +263,20 @@ export default function StoryViewer({ stories, startIndex, onClose, toast }) {
               <div className="text-[11px] text-white/70 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">{timeAgo(story.createdAt)}</div>
             </div>
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-black/30 backdrop-blur-sm text-white flex items-center justify-center hover:bg-black/50 transition-all text-lg">
-            <i className="fa-solid fa-xmark" />
-          </button>
+          <div className="flex items-center gap-2">
+            {story.author?.id === user?.id && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onClose(); router.push(`/edit-story/${story.id}`); }}
+                className="w-8 h-8 rounded-full bg-black/30 backdrop-blur-sm text-white flex items-center justify-center hover:bg-black/50 transition-all text-sm"
+                title="Edit story"
+              >
+                <i className="fa-solid fa-pen" />
+              </button>
+            )}
+            <button onClick={onClose} className="w-8 h-8 rounded-full bg-black/30 backdrop-blur-sm text-white flex items-center justify-center hover:bg-black/50 transition-all text-lg">
+              <i className="fa-solid fa-xmark" />
+            </button>
+          </div>
         </div>
 
         <div
