@@ -123,11 +123,11 @@ router.get('/:id', protect, async (req: AuthenticatedRequest, res: Response) => 
 
     if (user.profilePicture && !user.profilePicture.startsWith('http')) {
       const localPath = path.join(__dirname, '../uploads', user.profilePicture.replace('/uploads/', ''));
-      try { if (!fs.existsSync(localPath)) { await user.update({ profilePicture: null }); user.profilePicture = null; } } catch {}
+      try { if (!fs.existsSync(localPath)) { await user.update({ profilePicture: '' }); user.profilePicture = ''; } } catch {}
     }
     if (user.coverPhoto && !user.coverPhoto.startsWith('http')) {
       const localPath = path.join(__dirname, '../uploads', user.coverPhoto.replace('/uploads/', ''));
-      try { if (!fs.existsSync(localPath)) { await user.update({ coverPhoto: null }); user.coverPhoto = null; } } catch {}
+      try { if (!fs.existsSync(localPath)) { await user.update({ coverPhoto: '' }); user.coverPhoto = ''; } } catch {}
     }
 
     let friendStatus = 'none';

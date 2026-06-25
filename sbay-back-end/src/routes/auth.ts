@@ -64,11 +64,11 @@ router.post('/login', async (req: AuthenticatedRequest, res: Response) => {
     delete (data as unknown as Record<string, unknown>).password;
     if (data.profilePicture && !data.profilePicture.startsWith('http')) {
       const localPath = path.join(__dirname, '../uploads', data.profilePicture.replace('/uploads/', ''));
-      try { if (!fs.existsSync(localPath)) { await user.update({ profilePicture: null }); data.profilePicture = null; } } catch {}
+      try { if (!fs.existsSync(localPath)) { await user.update({ profilePicture: '' }); data.profilePicture = ''; } } catch {}
     }
     if (data.coverPhoto && !data.coverPhoto.startsWith('http')) {
       const localPath = path.join(__dirname, '../uploads', data.coverPhoto.replace('/uploads/', ''));
-      try { if (!fs.existsSync(localPath)) { await user.update({ coverPhoto: null }); data.coverPhoto = null; } } catch {}
+      try { if (!fs.existsSync(localPath)) { await user.update({ coverPhoto: '' }); data.coverPhoto = ''; } } catch {}
     }
     res.json({ success: true, token, data });
   } catch (err: unknown) {
@@ -88,11 +88,11 @@ router.get('/me', protect, async (req: AuthenticatedRequest, res: Response) => {
   if (user) {
     if (user.profilePicture && !user.profilePicture.startsWith('http')) {
       const localPath = path.join(__dirname, '../uploads', user.profilePicture.replace('/uploads/', ''));
-      try { if (!fs.existsSync(localPath)) { await user.update({ profilePicture: null }); user.profilePicture = null; } } catch {}
+      try { if (!fs.existsSync(localPath)) { await user.update({ profilePicture: '' }); user.profilePicture = ''; } } catch {}
     }
     if (user.coverPhoto && !user.coverPhoto.startsWith('http')) {
       const localPath = path.join(__dirname, '../uploads', user.coverPhoto.replace('/uploads/', ''));
-      try { if (!fs.existsSync(localPath)) { await user.update({ coverPhoto: null }); user.coverPhoto = null; } } catch {}
+      try { if (!fs.existsSync(localPath)) { await user.update({ coverPhoto: '' }); user.coverPhoto = ''; } } catch {}
     }
   }
   res.json({ success: true, data: user });
