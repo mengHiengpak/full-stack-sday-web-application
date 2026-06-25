@@ -1,5 +1,6 @@
 import { Router, Response } from 'express';
 import path from 'path';
+import fs from 'fs';
 import { Op } from 'sequelize';
 import sequelize from '../config/database';
 import User from '../models/User';
@@ -119,6 +120,15 @@ router.get('/:id', protect, async (req: AuthenticatedRequest, res: Response) => 
       ],
     });
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    if (user.profilePicture && !user.profilePicture.startsWith('http')) {
+      const localPath = path.join(__dirname, '../uploads', user.profilePicture.replace('/uploads/', ''));
+      try { if (!fs.existsSync(localPath)) { await user.update({ profilePicture: null }); user.profilePicture = null; } } catch {}
+    }
+    if (user.coverPhoto && !user.coverPhoto.startsWith('http')) {
+      const localPath = path.join(__dirname, '../uploads', user.coverPhoto.replace('/uploads/', ''));
+      try { if (!fs.existsSync(localPath)) { await user.update({ coverPhoto: null }); user.coverPhoto = null; } } catch {}
+    }
 
     let friendStatus = 'none';
     let friendRequestId = null;

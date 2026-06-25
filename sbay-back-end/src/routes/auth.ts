@@ -1,5 +1,7 @@
 import { Router, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import path from 'path';
+import fs from 'fs';
 import User from '../models/User';
 import { protect } from '../middleware/auth';
 import { AuthenticatedRequest } from '../types';
@@ -60,6 +62,14 @@ router.post('/login', async (req: AuthenticatedRequest, res: Response) => {
     const token = signToken(user.id);
     const data = user.toJSON();
     delete (data as unknown as Record<string, unknown>).password;
+    if (data.profilePicture && !data.profilePicture.startsWith('http')) {
+      const localPath = path.join(__dirname, '../uploads', data.profilePicture.replace('/uploads/', ''));
+      try { if (!fs.existsSync(localPath)) { await user.update({ profilePicture: null }); data.profilePicture = null; } } catch {}
+    }
+    if (data.coverPhoto && !data.coverPhoto.startsWith('http')) {
+      const localPath = path.join(__dirname, '../uploads', data.coverPhoto.replace('/uploads/', ''));
+      try { if (!fs.existsSync(localPath)) { await user.update({ coverPhoto: null }); data.coverPhoto = null; } } catch {}
+    }
     res.json({ success: true, token, data });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Server error';
@@ -75,6 +85,16 @@ router.get('/me', protect, async (req: AuthenticatedRequest, res: Response) => {
       { association: 'following', attributes: ['id', 'username', 'profilePicture'] },
     ],
   });
+  if (user) {
+    if (user.profilePicture && !user.profilePicture.startsWith('http')) {
+      const localPath = path.join(__dirname, '../uploads', user.profilePicture.replace('/uploads/', ''));
+      try { if (!fs.existsSync(localPath)) { await user.update({ profilePicture: null }); user.profilePicture = null; } } catch {}
+    }
+    if (user.coverPhoto && !user.coverPhoto.startsWith('http')) {
+      const localPath = path.join(__dirname, '../uploads', user.coverPhoto.replace('/uploads/', ''));
+      try { if (!fs.existsSync(localPath)) { await user.update({ coverPhoto: null }); user.coverPhoto = null; } } catch {}
+    }
+  }
   res.json({ success: true, data: user });
 });
 
