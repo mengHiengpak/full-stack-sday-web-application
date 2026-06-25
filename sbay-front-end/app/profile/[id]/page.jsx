@@ -194,9 +194,9 @@ export default function ProfilePage() {
               )}
             </div>
             <div className="px-8 max-[480px]:px-4 pb-4 relative">
-              <div className="flex items-end -mt-[60px] mb-3">
+              <div className="flex items-end -mt-[60px] mb-3 max-[480px]:flex-wrap">
                 <div className="relative flex-shrink-0">
-                  <div className="w-[120px] h-[120px] rounded-full border-4 border-[var(--bg2)] bg-[var(--accent)] flex items-center justify-center text-4xl font-bold text-white overflow-hidden shadow-md">
+                  <div className="w-[120px] h-[120px] rounded-full border-4 border-[var(--bg2)] bg-[var(--accent)] flex items-center justify-center text-4xl font-bold text-white overflow-hidden shadow-md max-[480px]:w-[80px] max-[480px]:h-[80px] max-[480px]:text-2xl">
                     {profile?.profilePicture ? (
                       <img src={profile.profilePicture} alt="" className="w-full h-full object-cover" />
                     ) : (
@@ -212,11 +212,11 @@ export default function ProfilePage() {
                     </>
                   )}
                 </div>
-                <div className="ml-4 pb-1 flex-1">
-                  <h1 className="text-xl font-bold text-[var(--text)]">{profile?.username || 'User'}</h1>
-                  <p className="text-sm text-[var(--text3)]">@{profile?.username?.toLowerCase() || 'user'}</p>
+                <div className="ml-4 pb-1 flex-1 max-[480px]:ml-3 max-[480px]:min-w-0">
+                  <h1 className="text-xl font-bold text-[var(--text)] max-[480px]:text-base">{profile?.username || 'User'}</h1>
+                  <p className="text-sm text-[var(--text3)] max-[480px]:text-xs">@{profile?.username?.toLowerCase() || 'user'}</p>
                 </div>
-                <div className="pb-1">
+                <div className="pb-1 max-[480px]:w-full max-[480px]:mt-2 max-[480px]:pl-[calc(80px+12px)]">
                   {isOwn ? (
                     <button onClick={startEdit} className="px-4 py-1.5 bg-[var(--bg3)] border border-[var(--border)] rounded-md text-sm font-semibold text-[var(--text)] cursor-pointer hover:bg-[var(--card2)] flex items-center gap-1.5">
                       <i className="fa-solid fa-pen" />Edit Profile
