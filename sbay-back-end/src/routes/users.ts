@@ -4,7 +4,13 @@ import { Op } from 'sequelize';
 import sequelize from '../config/database';
 import User from '../models/User';
 import Post from '../models/Post';
+import Comment from '../models/Comment';
+import Story from '../models/Story';
+import ChatMessage from '../models/ChatMessage';
+import Chat from '../models/Chat';
 import FriendRequest from '../models/FriendRequest';
+import Reaction from '../models/Reaction';
+import StoryComment from '../models/StoryComment';
 import { protect, adminOnly } from '../middleware/auth';
 import { uploadAvatar, uploadCover, cloudinary, isCloudinaryConfigured } from '../middleware/upload';
 import { tryUploadToSupabase } from '../middleware/supabaseUpload';
@@ -263,9 +269,20 @@ router.post('/:id/follow', protect, async (req: AuthenticatedRequest, res: Respo
 router.delete('/:id', protect, adminOnly, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userId = parseInt(req.params.id as string);
+    await ChatMessage.destroy({ where: { senderId: userId } });
+    await Story.destroy({ where: { userId } });
+    await StoryComment.destroy({ where: { authorId: userId } });
+    await Comment.destroy({ where: { authorId: userId } });
+    await Reaction.destroy({ where: { userId } });
+    await FriendRequest.destroy({ where: { [Op.or]: [{ senderId: userId }, { receiverId: userId }] } });
     await Post.destroy({ where: { authorId: userId } });
+    await sequelize.query('DELETE FROM "ChatParticipants" WHERE "userId" = ?', { replacements: [userId] });
+    await sequelize.query('DELETE FROM "UserFollows" WHERE "followerId" = ? OR "followingId" = ?', { replacements: [userId, userId] });
+    await sequelize.query('DELETE FROM "PostLikes" WHERE "userId" = ?', { replacements: [userId] });
+    await sequelize.query('DELETE FROM "PostShares" WHERE "userId" = ?', { replacements: [userId] });
+    await sequelize.query('DELETE FROM "CommentLikes" WHERE "userId" = ?', { replacements: [userId] });
     await User.destroy({ where: { id: userId } });
-    res.json({ success: true, message: 'User and their posts deleted' });
+    res.json({ success: true, message: 'User and all related data deleted' });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Server error';
     res.status(500).json({ success: false, message });
