@@ -6,7 +6,6 @@ import http from 'http';
 import sequelize from './config/database';
 import './models/associations';
 import './models/Story';
-import User from './models/User';
 
 import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
@@ -62,12 +61,6 @@ const startServer = async () => {
 
     await sequelize.sync({ alter: true });
     console.log('✅ Database synced');
-
-    const [admin] = await User.findOrCreate({
-      where: { email: 'admin@sbay.com' },
-      defaults: { username: 'admin', email: 'admin@sbay.com', password: 'admin123456', role: 'admin' as const },
-    });
-    if (admin) console.log('✅ Seed: admin@sbay.com / admin123456');
 
     app.listen(PORT, () => console.log(`🚀 Sbay Server running on port ${PORT}`));
   } catch (err) {

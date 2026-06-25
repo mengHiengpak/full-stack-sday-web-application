@@ -1,9 +1,10 @@
 import { Router, Response } from 'express';
 import { Op } from 'sequelize';
+import sequelize from '../config/database';
 import Chat from '../models/Chat';
 import ChatMessage from '../models/ChatMessage';
 import User from '../models/User';
-import { protect } from '../middleware/auth';
+import { protect, adminOnly } from '../middleware/auth';
 import { AuthenticatedRequest } from '../types';
 import { getIO } from '../socket';
 import { uploadChat, isCloudinaryConfigured } from '../middleware/upload';
@@ -141,6 +142,41 @@ router.delete('/messages/:messageId', protect, async (req: AuthenticatedRequest,
 
     await message.destroy();
     res.json({ success: true, message: 'Message deleted' });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Server error';
+    res.status(500).json({ success: false, message });
+  }
+});
+
+router.delete('/:chatId', protect, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const chatId = parseInt(req.params.chatId as string);
+    const chat = await Chat.findByPk(chatId);
+    if (!chat) return res.status(404).json({ success: false, message: 'Chat not found' });
+    if (!chat.participants.includes(req.user!.id) && req.user!.role !== 'admin')
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+
+    await ChatMessage.destroy({ where: { chatId } });
+    await sequelize.query('DELETE FROM "ChatParticipants" WHERE "chatId" = ?', { replacements: [chatId] });
+    await chat.destroy();
+    res.json({ success: true, message: 'Chat and all messages deleted' });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Server error';
+    res.status(500).json({ success: false, message });
+  }
+});
+
+router.get('/admin/all', protect, adminOnly, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const chats = await Chat.findAll({ order: [['updatedAt', 'DESC']] });
+    const enriched = await Promise.all(chats.map(async (chat) => {
+      const users = await User.findAll({
+        where: { id: chat.participants },
+        attributes: ['id', 'username', 'profilePicture'],
+      });
+      return { ...chat.toJSON(), participants: users };
+    }));
+    res.json({ success: true, data: enriched });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Server error';
     res.status(500).json({ success: false, message });
