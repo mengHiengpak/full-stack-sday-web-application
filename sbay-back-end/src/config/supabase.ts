@@ -1,15 +1,14 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL as string;
-const supabaseKey = process.env.SUPABASE_KEY as string;
-
-if (!supabaseUrl || !supabaseKey) {
-  console.warn('⚠️ SUPABASE_URL and SUPABASE_KEY not set — Supabase uploads disabled');
+let supabase: SupabaseClient;
+try {
+  supabase = createClient(
+    process.env.SUPABASE_URL || 'https://placeholder.supabase.co',
+    process.env.SUPABASE_KEY || 'placeholder-key'
+  );
+} catch (e) {
+  console.warn('⚠️ Supabase realtime not supported on Node.js 20 — uploads fallback to local/Cloudinary');
+  supabase = {} as SupabaseClient;
 }
-
-const supabase: SupabaseClient = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseKey || 'placeholder-key'
-);
 
 export default supabase;
