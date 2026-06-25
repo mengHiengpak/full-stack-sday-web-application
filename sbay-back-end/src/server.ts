@@ -62,16 +62,12 @@ sequelize.authenticate()
 sequelize.sync({ alter: process.env.NODE_ENV === 'development' })
   .then(async () => {
     console.log('✅ Database synced');
-    const userCount = await User.count();
-    if (userCount === 0) {
-      await User.create({
-        username: 'admin',
-        email: 'admin@sbay.com',
-        password: 'admin123456',
-        role: 'admin',
-      });
-      console.log('✅ Seed: admin@sbay.com / admin123456');
-    }
+    const [admin] = await User.findOrCreate({
+      where: { email: 'admin@sbay.com' },
+      defaults: { username: 'admin', email: 'admin@sbay.com', password: 'admin123456', role: 'admin' as const },
+    });
+    if (admin) console.log('✅ Seed: admin@sbay.com / admin123456');
+    console.log('✅ Seed: admin@sbay.com / admin123456');
   })
   .catch(err => console.error('❌ Sync Error:', err));
 
